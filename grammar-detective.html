@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grammar Detective — Present Perfect Simple vs Continuous</title>
+<style>
+:root{--bg:#0c1018;--panel:#151b28;--panel2:#1c2434;--ink:#eef3fb;--muted:#8b98b4;--amber:#ffb703;--teal:#2ec4b6;--green:#3ddc84;--red:#ff5c7a;--blue:#6ea8fe;--purple:#c77dff;--orange:#ff8c42}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(1100px 700px at 50% -5%,#18202f,#0c1018 65%);color:var(--ink);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:16px}
+.wrap{width:100%;max-width:1020px}
+.screen{display:none;animation:fade .35s ease}.screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+h1{font-size:clamp(24px,4.5vw,44px);font-weight:800;text-align:center;margin:0 0 6px;letter-spacing:-1px}
+h1 span{color:var(--amber)}
+.sub{text-align:center;color:var(--muted);font-size:clamp(13px,2vw,17px);margin:0 0 22px}
+.brief{background:var(--panel);border:1px solid #263149;border-radius:18px;padding:20px 24px;max-width:700px;margin:0 auto 20px}
+.brief h3{margin:0 0 10px;color:var(--teal);font-size:14px;text-transform:uppercase;letter-spacing:.9px}
+.brief p{margin:0 0 8px;line-height:1.6;color:#cdd6e8;font-size:14.5px}
+.brief .rule{background:rgba(255,183,3,.1);border:1px solid rgba(255,183,3,.3);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:13.5px;color:#ffd166}
+.btn{display:block;margin:0 auto;padding:14px 36px;border:0;border-radius:15px;cursor:pointer;font-size:clamp(15px,2.2vw,19px);font-weight:800;font-family:inherit;background:linear-gradient(135deg,var(--amber),#ffd166);color:#241a00;box-shadow:0 10px 26px rgba(255,183,3,.3);transition:.18s}
+.btn:hover{transform:translateY(-2px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-continue{display:none;margin:14px auto 0;padding:10px 28px;border:0;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;background:var(--teal);color:#fff;transition:.15s}
+.btn-continue:hover{transform:translateY(-2px)}
+.btn-continue.on{display:block}
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.pill{background:var(--panel);border:1px solid #263149;border-radius:999px;padding:7px 15px;font-weight:700;font-size:13.5px}
+.pill b{color:var(--amber)}
+.pill.correct-pill b{color:var(--green)}
+#foundCounter{font-variant-numeric:tabular-nums;font-weight:800;font-size:clamp(15px,2.5vw,21px);color:var(--green)}
+.passage-box{background:var(--panel);border:1px solid #263149;border-radius:20px;padding:clamp(16px,2.6vw,24px);margin-bottom:16px}
+.passage-box h3{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--blue)}
+.sentence{font-size:clamp(14px,2.2vw,17px);line-height:1.7;color:#cdd6e8;margin:0 0 8px;cursor:pointer;transition:.15s;border-radius:8px;padding:6px 8px;border:2px solid transparent;display:block}
+.sentence:hover{background:rgba(110,168,254,.08);border-color:rgba(110,168,254,.3)}
+.sentence.found{background:rgba(61,220,132,.1);border-color:var(--green)}
+.sentence.found::after{content:" ✓";color:var(--green);font-weight:800}
+.sentence.miss{background:rgba(255,92,122,.06);border-color:rgba(255,92,122,.3)}
+.sentence.locked{pointer-events:none;opacity:.5}
+.question-box{background:var(--panel);border:1px solid #263149;border-radius:20px;padding:clamp(16px,2.6vw,24px);display:none;animation:fade .3s}
+.question-box.on{display:block}
+.question-box h3{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--amber)}
+.question-box .q-text{font-size:clamp(15px,2.4vw,20px);font-weight:700;line-height:1.45;margin:0 0 14px;color:#cdd6e8}
+.classify-btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:640px){.classify-btns{grid-template-columns:1fr}}
+.classify-btn{padding:14px 16px;border-radius:13px;cursor:pointer;background:var(--panel2);border:2px solid #263149;font-size:clamp(13px,1.8vw,15px);font-weight:700;transition:.16s;text-align:left;color:var(--ink);font-family:inherit}
+.classify-btn:hover:not(.locked){border-color:var(--teal);transform:translateX(4px)}
+.classify-btn .emoji{font-size:20px;display:block;margin-bottom:4px}
+.classify-btn .label{display:block;font-size:12px;color:var(--muted);margin-top:2px;font-weight:400}
+.classify-btn.correct{background:rgba(61,220,132,.15);border-color:var(--green)}
+.classify-btn.wrong{background:rgba(255,92,122,.12);border-color:var(--red)}
+.classify-btn.locked{cursor:default}
+.fb{margin-top:12px;border-radius:14px;padding:14px 16px;display:none;animation:fade .3s}
+.fb.on{display:block}
+.fb.good{background:rgba(61,220,132,.1);border:1px solid rgba(61,220,132,.38)}
+.fb.bad{background:rgba(255,92,122,.09);border:1px solid rgba(255,92,122,.32)}
+.fb .head{font-weight:800;font-size:clamp(14px,2vw,17px);margin-bottom:4px}
+.fb.good .head{color:var(--green)} .fb.bad .head{color:var(--red)}
+.fb .why{font-size:clamp(13px,1.8vw,14.5px);color:#c8d2e6;line-height:1.55}
+.fb .why b{color:var(--amber)}
+.clue-btn{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:2px solid #263149;border-radius:10px;padding:6px 12px;cursor:pointer;font-weight:700;font-size:12px;color:var(--ink);font-family:inherit;transition:.2s;margin-bottom:10px}
+.clue-btn:hover:not(.used){border-color:var(--purple);transform:translateY(-1px)}
+.clue-btn .count{background:var(--purple);color:#1a0f24;border-radius:99px;padding:1px 6px;font-size:10px;font-weight:800}
+.clue-btn.used{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+.clue-box{background:rgba(199,125,255,.1);border:1px dashed rgba(199,125,255,.4);border-radius:10px;padding:10px 14px;font-size:13.5px;color:#e2c8ff;margin-bottom:10px;display:none}
+.clue-box.on{display:block}
+.progress-bar{display:flex;gap:6px;justify-content:center;margin:14px 0}
+.progress-bar .slot{width:32px;height:8px;border-radius:99px;background:#263149;transition:.3s}
+.progress-bar .slot.done{background:var(--green)}
+.progress-bar .slot.partial{background:var(--amber)}
+.results{text-align:center}
+.results .big{font-size:clamp(28px,6vw,56px);font-weight:800;margin:0 0 8px}
+.results .score-line{color:var(--muted);font-size:clamp(14px,2vw,17px);margin:0 0 20px}
+.badge-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.badge{padding:12px 20px;border-radius:14px;text-align:center;background:var(--panel);border:1px solid #263149;min-width:100px}
+.badge .n{font-size:clamp(20px,3.6vw,30px);font-weight:800;line-height:1;color:var(--amber)}
+.badge .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-top:4px}
+.answers-box{background:var(--panel);border:1px solid #263149;border-radius:16px;padding:18px 22px;max-width:680px;margin:0 auto 20px;text-align:left}
+.answers-box h3{margin:0 0 10px;font-size:14px;color:var(--teal);text-transform:uppercase;letter-spacing:.8px}
+.answers-box table{width:100%;border-collapse:collapse;font-size:12.5px}
+.answers-box th,.answers-box td{border:1px solid #263149;padding:6px 8px;text-align:left;vertical-align:top}
+.answers-box th{background:var(--panel2);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.answers-box td{color:#c8d2e6}
+.answers-box .simple-cell{color:var(--teal);font-weight:600}
+.answers-box .cont-cell{color:var(--orange);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="screen on" id="s-start">
+  <h1>🔍 Grammar <span>Detective</span></h1>
+  <p class="sub">English G8-1 · Present Perfect Simple vs Continuous</p>
+  <div class="brief">
+    <h3>Your mission</h3>
+    <p>You are a <b>Grammar Detective</b>. Two passages are on your desk. Hidden inside them are <b>15 present perfect sentences</b>.</p>
+    <p>Your job: <b>find at least 3</b> and decide if each one is <b>Simple</b> or <b>Continuous</b>. Correct classifications earn points.</p>
+    <div class="rule">🔑 <b>The key clue:</b> Simple = the <u>result</u> matters (it's finished). Continuous = the <u>activity</u> matters (it's still going).</div>
+  </div>
+  <button class="btn" onclick="startGame()">Start the Investigation →</button>
+</div>
+
+<div class="screen" id="s-game">
+  <div class="hud">
+    <div class="pill">Found: <b><span id="foundCount">0</span>/3</b></div>
+    <div class="pill correct-pill">Correct: <b><span id="correctCount">0</span>/3</b></div>
+    <div class="pill">Clues: <b><span id="clueCount">3</span></b></div>
+  </div>
+  <div class="progress-bar" id="progressBar"></div>
+
+  <div class="passage-box" id="passageA">
+    <h3>Passage A — A Letter Home</h3>
+    <span class="sentence" onclick="clickSentence(this, 'A1')" data-id="A1">Dear Mum and Dad,</span>
+    <span class="sentence" onclick="clickSentence(this, 'A2')" data-id="A2">I have been having a wonderful time at the summer camp.</span>
+    <span class="sentence" onclick="clickSentence(this, 'A3')" data-id="A3">The days are long but full of activities.</span>
+    <span class="sentence" onclick="clickSentence(this, 'A4')" data-id="A4">I have tried archery, climbing and canoeing.</span>
+    <span class="sentence" onclick="clickSentence(this, 'A5')" data-id="A5">My favourite so far is photography — I have been taking pictures of everything.</span>
+    <span class="sentence" onclick="clickSentence(this, 'A6')" data-id="A6">Remember the camera you gave me for my birthday?</span>
+    <span class="sentence" onclick="clickSentence(this, 'A7')" data-id="A7">My dad has had a camera for as long as I can remember, but I have never had a really good camera of my own.</span>
+    <span class="sentence" onclick="clickSentence(this, 'A8')" data-id="A8">Now I do!</span>
+    <span class="sentence" onclick="clickSentence(this, 'A9')" data-id="A9">I have been doing photography at a local club since September and I have learned so much.</span>
+    <span class="sentence" onclick="clickSentence(this, 'A10')" data-id="A10">I have already taken about 200 photos with it.</span>
+    <span class="sentence" onclick="clickSentence(this, 'A11')" data-id="A11">I have been working hard on my schoolwork lately too.</span>
+    <span class="sentence" onclick="clickSentence(this, 'A12')" data-id="A12">The teachers here make everything interesting.</span>
+    <span class="sentence" onclick="clickSentence(this, 'A13')" data-id="A13">I hope you are well and I will write again soon.</span>
+    <span class="sentence" onclick="clickSentence(this, 'A14')" data-id="A14">Love, Alex</span>
+  </div>
+
+  <div class="passage-box" id="passageB">
+    <h3>Passage B — A Magazine Interview</h3>
+    <span class="sentence" onclick="clickSentence(this, 'B1')" data-id="B1">Today we talk to two talented siblings about their hobbies.</span>
+    <span class="sentence" onclick="clickSentence(this, 'B2')" data-id="B2">I have tried lots of different activities over the years, but basketball is my passion.</span>
+    <span class="sentence" onclick="clickSentence(this, 'B3')" data-id="B3">I have been playing basketball for three years now and I love every minute.</span>
+    <span class="sentence" onclick="clickSentence(this, 'B4')" data-id="B4">I have also been going to a gymnastics club since I was eight — it helps with my flexibility.</span>
+    <span class="sentence" onclick="clickSentence(this, 'B5')" data-id="B5">My sister is different.</span>
+    <span class="sentence" onclick="clickSentence(this, 'B6')" data-id="B6">She has never played a team sport.</span>
+    <span class="sentence" onclick="clickSentence(this, 'B7')" data-id="B7">She prefers individual activities.</span>
+    <span class="sentence" onclick="clickSentence(this, 'B8')" data-id="B8">We both have been spending a lot of time on our hobbies lately.</span>
+    <span class="sentence" onclick="clickSentence(this, 'B9')" data-id="B9">She has been going skating since she was little and she is very good now.</span>
+    <span class="sentence" onclick="clickSentence(this, 'B10')" data-id="B10">Thank you for reading!</span>
+  </div>
+
+  <div class="question-box" id="questionBox">
+    <h3>📋 Classify this sentence</h3>
+    <p class="q-text" id="qText"></p>
+    <button class="clue-btn" id="clueBtn" onclick="useClue()">💡 Need a clue? <span class="count" id="clueCount2">3</span></button>
+    <div class="clue-box" id="clueBox"></div>
+    <div class="classify-btns">
+      <button class="classify-btn" id="btnSimple" onclick="classify('simple')">
+        <span class="emoji">✅</span> Simple
+        <span class="label">have/has + past participle — the result matters</span>
+      </button>
+      <button class="classify-btn" id="btnContinuous" onclick="classify('continuous')">
+        <span class="emoji">🔄</span> Continuous
+        <span class="label">have/has + been + -ing — the activity matters</span>
+      </button>
+    </div>
+    <div class="fb" id="fb"><div class="head" id="fbhead"></div><div class="why" id="fbwhy"></div></div>
+    <button class="btn-continue" id="btnContinue" onclick="nextQuestion()">Continue →</button>
+  </div>
+</div>
+
+<div class="screen" id="s-end">
+  <div class="results">
+    <div class="big" id="endTitle"></div>
+    <p class="score-line" id="endLine"></p>
+    <div class="badge-row">
+      <div class="badge"><div class="n" id="endFound">0</div><div class="l">Found</div></div>
+      <div class="badge"><div class="n" id="endCorrect">0</div><div class="l">Correct</div></div>
+      <div class="badge"><div class="n" id="endTotal">0</div><div class="l">Total PP</div></div>
+    </div>
+  </div>
+  <div class="answers-box">
+    <h3>🔑 Answer Key — All 15 Present Perfect Sentences</h3>
+    <table>
+      <thead><tr><th>#</th><th>Sentence</th><th>Type</th><th>Why?</th></tr></thead>
+      <tbody id="answersBody"></tbody>
+    </table>
+  </div>
+  <button class="btn" style="margin-top:18px" onclick="location.reload()">Play Again 🔁</button>
+</div>
+
+</div>
+<script>
+/* ============================================================
+   GRAMMAR DETECTIVE — Present Perfect Simple vs Continuous
+   Click on present perfect sentences, classify them, explain.
+   V2: Fixed ID mapping, per-sentence clicking, correct tracking.
+   ============================================================ */
+
+const ANSWERS = [
+{id:"A1",text:"Dear Mum and Dad,",type:"none",why:"Not present perfect."},
+{id:"A2",text:"I have been having a wonderful time at the summer camp.",type:"continuous",why:"Ongoing: still having a good time. State verb + continuous for emphasis."},
+{id:"A3",text:"The days are long but full of activities.",type:"none",why:"Not present perfect. Present simple."},
+{id:"A4",text:"I have tried archery, climbing and canoeing.",type:"simple",why:"Life experience — completed actions. Result matters."},
+{id:"A5",text:"My favourite so far is photography — I have been taking pictures of everything.",type:"continuous",why:"Ongoing: started recently, still taking photos."},
+{id:"A6",text:"Remember the camera you gave me for my birthday?",type:"none",why:"Past simple 'gave', not present perfect."},
+{id:"A7",text:"My dad has had a camera for as long as I can remember, but I have never had a really good camera of my own.",type:"simple",why:"State verb 'have' (possession) + 'never had' = life experience. Result matters."},
+{id:"A8",text:"Now I do!",type:"none",why:"Present simple, not present perfect."},
+{id:"A9",text:"I have been doing photography at a local club since September and I have learned so much.",type:"continuous",why:"Mixed: 'have been doing' = ongoing since September. 'have learned' = result."},
+{id:"A10",text:"I have already taken about 200 photos with it.",type:"simple",why:"Result: 200 photos completed. 'Already' signals completion."},
+{id:"A11",text:"I have been working hard on my schoolwork lately too.",type:"continuous",why:"Ongoing: 'lately' = recent continuous activity."},
+{id:"A12",text:"The teachers here make everything interesting.",type:"none",why:"Present simple, not present perfect."},
+{id:"A13",text:"I hope you are well and I will write again soon.",type:"none",why:"Present simple + future, not present perfect."},
+{id:"A14",text:"Love, Alex",type:"none",why:"Sign-off, not a sentence."},
+{id:"B1",text:"Today we talk to two talented siblings about their hobbies.",type:"none",why:"Present simple, not present perfect."},
+{id:"B2",text:"I have tried lots of different activities over the years, but basketball is my passion.",type:"simple",why:"Life experience — completed. Result matters."},
+{id:"B3",text:"I have been playing basketball for three years now and I love every minute.",type:"continuous",why:"Ongoing: 'for three years' + still playing now."},
+{id:"B4",text:"I have also been going to a gymnastics club since I was eight — it helps with my flexibility.",type:"continuous",why:"Ongoing: 'since I was eight' = still going."},
+{id:"B5",text:"My sister is different.",type:"none",why:"Present simple, not present perfect."},
+{id:"B6",text:"She has never played a team sport",type:"simple",why:"Life experience — still hasn't done it. Result matters."},
+{id:"B7",text:"She prefers individual activities.",type:"none",why:"Present simple, not present perfect."},
+{id:"B8",text:"We both have been spending a lot of time on our hobbies lately",type:"continuous",why:"Ongoing: 'lately' = recent continuous activity."},
+{id:"B9",text:"She has been going skating since she was little and she is very good now.",type:"continuous",why:"Ongoing: 'since she was little' = still going."},
+{id:"B10",text:"Thank you for reading!",type:"none",why:"Not a full sentence with present perfect."},
+];
+
+const PP_IDS = ANSWERS.filter(a => a.type !== "none").map(a => a.id);
+const TOTAL_PP = PP_IDS.length; // 15
+const TARGET = 3;
+const MAX_CLUES = 3;
+
+let found = [];
+let correctCount = 0;
+let cluesLeft = MAX_CLUES;
+let currentSentence = null;
+let awaitingClassification = false;
+
+function startGame(){
+  document.getElementById("s-start").classList.remove("on");
+  document.getElementById("s-game").classList.add("on");
+  updateHUD();
+  renderProgressBar();
+}
+
+function clickSentence(el, id){
+  if(awaitingClassification) return;
+  if(el.classList.contains("found")) return;
+  if(el.classList.contains("miss")) return;
+
+  const answer = ANSWERS.find(a => a.id === id);
+  if(!answer) return;
+
+  if(answer.type === "none"){
+    el.classList.add("miss");
+    setTimeout(()=>el.classList.remove("miss"), 800);
+    return;
+  }
+
+  // Found a present perfect sentence!
+  el.classList.add("found");
+  found.push({id: id, text: answer.text, type: answer.type, why: answer.why});
+  updateHUD();
+  renderProgressBar();
+
+  // Ask classification for this sentence
+  askClassification(found[found.length-1]);
+}
+
+function askClassification(item){
+  awaitingClassification = true;
+  currentSentence = item;
+  document.getElementById("questionBox").classList.add("on");
+  document.getElementById("qText").innerHTML = "<u>" + item.text + "</u>";
+  document.getElementById("btnSimple").className = "classify-btn";
+  document.getElementById("btnContinuous").className = "classify-btn";
+  document.getElementById("fb").className = "fb";
+  document.getElementById("clueBox").classList.remove("on");
+  document.getElementById("clueBtn").classList.remove("used");
+  document.getElementById("clueBtn").disabled = false;
+  document.getElementById("clueCount2").textContent = cluesLeft;
+
+  // Disable passage clicks
+  document.querySelectorAll(".passage-box .sentence").forEach(s => {
+    s.classList.add("locked");
+  });
+}
+
+function useClue(){
+  if(cluesLeft <= 0) return;
+  const item = currentSentence;
+  cluesLeft--;
+  document.getElementById("clueCount2").textContent = cluesLeft;
+  document.getElementById("clueCount").textContent = cluesLeft;
+
+  let clue = "";
+  if(item.type === "simple"){
+    clue = "🔑 Clue: This sentence focuses on the <b>result</b> — the action is finished and the outcome matters. Think: \"What happened?\"";
+  }else{
+    clue = "🔑 Clue: This sentence focuses on the <b>activity</b> — it started in the past and is still happening now. Think: \"How long?\"";
+  }
+
+  document.getElementById("clueBox").innerHTML = clue;
+  document.getElementById("clueBox").classList.add("on");
+
+  if(cluesLeft <= 0){
+    document.getElementById("clueBtn").classList.add("used");
+    document.getElementById("clueBtn").disabled = true;
+  }
+}
+
+function classify(type){
+  const item = currentSentence;
+  const btnSimple = document.getElementById("btnSimple");
+  const btnContinuous = document.getElementById("btnContinuous");
+  btnSimple.classList.add("locked");
+  btnContinuous.classList.add("locked");
+
+  const correct = type === item.type;
+  const correctBtn = type === "simple" ? btnSimple : btnContinuous;
+  correctBtn.classList.add("correct");
+
+  const fb = document.getElementById("fb");
+  if(correct){
+    correctCount++;
+    fb.className = "fb on good";
+    document.getElementById("fbhead").textContent = "✓ Correct! This is " + type + ".";
+  }else{
+    fb.className = "fb on bad";
+    document.getElementById("fbhead").textContent = "✗ Not quite — this is " + item.type + ".";
+    const wrongBtn = type === "simple" ? btnContinuous : btnSimple;
+    wrongBtn.classList.add("wrong");
+  }
+
+  document.getElementById("fbwhy").innerHTML = "<b>Why?</b> " + item.why;
+  updateHUD();
+  renderProgressBar();
+
+  // Show continue button instead of setTimeout
+  document.getElementById("btnContinue").classList.add("on");
+}
+
+function nextQuestion(){
+  document.getElementById("questionBox").classList.remove("on");
+  awaitingClassification = false;
+
+  document.querySelectorAll(".passage-box .sentence").forEach(s => {
+    s.classList.remove("locked");
+  });
+
+  if(correctCount >= TARGET || found.length >= TOTAL_PP){
+    endGame();
+  }
+}
+
+function updateHUD(){
+  document.getElementById("foundCount").textContent = found.length;
+  document.getElementById("correctCount").textContent = correctCount;
+  document.getElementById("clueCount").textContent = cluesLeft;
+}
+
+function renderProgressBar(){
+  const bar = document.getElementById("progressBar");
+  bar.innerHTML = "";
+  for(let i = 0; i < TARGET; i++){
+    const slot = document.createElement("div");
+    slot.className = "slot" + (i < correctCount ? " done" : "");
+    bar.appendChild(slot);
+  }
+}
+
+function endGame(){
+  document.getElementById("s-game").classList.remove("on");
+  document.getElementById("s-end").classList.add("on");
+
+  let title, line;
+  if(correctCount >= TARGET){
+    title = "🕵️ Case Closed!";
+    line = "You correctly classified " + correctCount + " present perfect sentences. Excellent detective work!";
+  }else if(correctCount === 2){
+    title = "🕵️ Almost There!";
+    line = "You correctly classified " + correctCount + " of " + TARGET + ". Just one more next time!";
+  }else if(correctCount === 1){
+    title = "🕵️ Keep Looking!";
+    line = "You correctly classified " + correctCount + " of " + TARGET + ". Read the passages again — they are hiding!";
+  }else{
+    title = "🕵️ Cold Trail...";
+    line = "You didn't classify any correctly. Don't worry — check the answer key below!";
+  }
+
+  document.getElementById("endTitle").textContent = title;
+  document.getElementById("endLine").textContent = line;
+  document.getElementById("endFound").textContent = found.length;
+  document.getElementById("endCorrect").textContent = correctCount;
+  document.getElementById("endTotal").textContent = TOTAL_PP;
+
+  // Render answer key — only actual PP sentences
+  const body = document.getElementById("answersBody");
+  body.innerHTML = "";
+  const ppAnswers = ANSWERS.filter(a => a.type !== "none");
+  ppAnswers.forEach((a, i) => {
+    const tr = document.createElement("tr");
+    const typeLabel = a.type === "simple"
+      ? '<span class="simple-cell">Simple ✓</span>'
+      : '<span class="cont-cell">Continuous 🔄</span>';
+    tr.innerHTML = "<td>" + (i+1) + "</td><td>" + a.text + "</td><td>" + typeLabel + "</td><td>" + a.why + "</td>";
+    body.appendChild(tr);
+  });
+}
+</script>
+</body>
+</html>
