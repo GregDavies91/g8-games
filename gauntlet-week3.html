@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 3 Vocabulary Gauntlet — English G8-1</title>
+<style>
+:root{--ink:#2D2A26;--muted:#6B645B;--line:#C9C2B6;--teal:#2C7A7B;--green:#27AE60;--red:#C0392B;}
+*{box-sizing:border-box}
+body{margin:0;background:#F7F5F0;color:var(--ink);
+  font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.5;font-size:15px}
+.wrap{max-width:680px;margin:0 auto;padding:30px 24px 60px}
+h1{font-size:22px;margin:0 0 2px;color:var(--teal)}
+.sub{color:var(--muted);font-size:13px;margin-bottom:8px}
+.meta{display:flex;gap:18px;font-size:13px;color:var(--muted);
+  border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin-bottom:20px;flex-wrap:wrap}
+.meta b{color:var(--ink)}
+.progress{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+.progress .bar{flex:1;height:8px;background:#E0DCD4;border-radius:4px;overflow:hidden}
+.progress .fill{height:100%;background:var(--teal);border-radius:4px;transition:width .3s}
+.progress .count{font-size:13px;color:var(--muted);white-space:nowrap}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:24px 22px;
+  box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.def{font-size:18px;font-weight:600;margin:2px 0 14px;color:var(--ink)}
+.hint{font-size:13px;color:var(--muted);margin-bottom:14px}
+.options{display:grid;gap:10px}
+.opt{border:1.5px solid var(--line);border-radius:8px;padding:12px 16px;cursor:pointer;
+  background:#FAFAF7;font-size:15px;font-weight:600;transition:all .15s;text-align:left;width:100%}
+.opt:hover{border-color:var(--teal);background:#E6F2F2}
+.opt.correct{border-color:var(--green);background:#E8F8EC;color:#1E6E3A}
+.opt.wrong{border-color:var(--red);background:#FDEDEC;color:#922B21}
+.opt.disabled{pointer-events:none;opacity:.7}
+.feedback{margin-top:14px;padding:12px 16px;border-radius:8px;font-size:13.5px;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:#E8F8EC;color:#1E6E3A;border:1px solid #B7E4C7}
+.feedback.no{background:#FDEDEC;color:#922B21;border:1px solid #F5C6CB}
+.feedback .sentence{margin-top:6px;font-style:italic}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px}
+.btn{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:10px 22px;
+  font-size:14px;cursor:pointer;font-weight:600;transition:background .15s}
+.btn:hover{background:#246163}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--teal);border:1.5px solid var(--teal)}
+.score{text-align:center;padding:30px 20px}
+.score .big{font-size:42px;font-weight:700;color:var(--teal)}
+.score .rank{font-size:18px;margin:10px 0;color:var(--ink)}
+.score .msg{color:var(--muted);font-size:14px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Week 3 Vocabulary Gauntlet</h1>
+  <div class="sub">English Grade 8 Class 1 &middot; Unit 1 (Free Time) &middot; 6 words</div>
+  <div class="meta">
+    <span><b>Player:</b> ________________________</span>
+    <span><b>Date:</b> ______________</span>
+  </div>
+
+  <div class="progress">
+    <div class="bar"><div class="fill" id="fill"></div></div>
+    <div class="count" id="count">1 / 6</div>
+  </div>
+
+  <div id="quiz">
+    <div class="card">
+      <div class="hint">Which word means this?</div>
+      <div class="def" id="q-def"></div>
+      <div class="options" id="q-options"></div>
+      <div class="feedback" id="q-feedback"></div>
+    </div>
+    <div class="nav">
+      <button class="btn ghost" id="prev-btn" onclick="prev()">Back</button>
+      <button class="btn" id="next-btn" onclick="next()" disabled>Next</button>
+    </div>
+  </div>
+
+  <div id="end" class="hidden">
+    <div class="card score">
+      <div class="big" id="score-big"></div>
+      <div class="rank" id="score-rank"></div>
+      <div class="msg" id="score-msg"></div>
+      <button class="btn" onclick="restart()" style="margin-top:18px">Play Again</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var Q=[
+ {def:"a sport played on sand with two teams hitting a ball over a net",w:"beach volleyball",
+   s:"We played beach volleyball on the beach during summer camp.",
+   opts:["beach volleyball","cycling","shopping","video games"]},
+ {def:"riding a bicycle as a sport, exercise, or way to travel",w:"cycling",
+   s:"My dad goes cycling every weekend in the park.",
+   opts:["cycling","swimming","shopping","beach volleyball"]},
+ {def:"an open area or building where people buy and sell goods",w:"market",
+   s:"We bought fresh fruit at the weekend market.",
+   opts:["market","cycling","beach volleyball","video games"]},
+ {def:"the activity of going to shops to buy things",w:"shopping",
+   s:"My sister loves shopping for new clothes.",
+   opts:["shopping","swimming","cycling","market"]},
+ {def:"moving through water using your arms and legs",w:"swimming",
+   s:"Swimming is my favourite sport in summer.",
+   opts:["swimming","shopping","video games","beach volleyball"]},
+ {def:"electronic games played on a screen",w:"video games",
+   s:"He plays video games after finishing his homework.",
+   opts:["video games","beach volleyball","cycling","market"]}
+];
+var cur=0,score=0,locked=false;
+function render(){
+  var q=Q[cur];
+  document.getElementById('q-def').textContent='"'+q.def+'"';
+  document.getElementById('q-feedback').className='feedback';
+  document.getElementById('q-feedback').innerHTML='';
+  document.getElementById('count').textContent=(cur+1)+' / '+Q.length;
+  document.getElementById('fill').style.width=((cur)/Q.length*100)+'%';
+  var opts=document.getElementById('q-options');
+  opts.innerHTML='';
+  var shuffled=q.opts.slice().sort(function(){return Math.random()-0.5});
+  shuffled.forEach(function(o){
+    var b=document.createElement('button');
+    b.className='opt';b.textContent=o;
+    b.onclick=function(){pick(b,o,q);};
+    opts.appendChild(b);
+  });
+  document.getElementById('prev-btn').disabled=cur===0;
+  document.getElementById('next-btn').disabled=true;
+  locked=false;
+}
+function pick(el,o,q){
+  if(locked)return;locked=true;
+  var correct=o===q.w;
+  if(correct)score++;
+  var opts=document.querySelectorAll('.opt');
+  opts.forEach(function(b){
+    b.className='opt disabled';
+    if(b.textContent===q.w)b.className='opt correct';
+    else if(b===el)b.className='opt wrong';
+  });
+  var fb=document.getElementById('q-feedback');
+  fb.className='feedback show '+(correct?'ok':'no');
+  fb.innerHTML=(correct?'Correct!':'Not quite — the answer is: <b>'+q.w+'</b>')+
+    '<div class="sentence">"'+q.s+'"</div>';
+  document.getElementById('next-btn').disabled=false;
+}
+function next(){
+  cur++;
+  if(cur>=Q.length){showEnd();return;}
+  render();
+}
+function prev(){if(cur>0){cur--;render();}}
+function showEnd(){
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('end').classList.remove('hidden');
+  document.getElementById('fill').style.width='100%';
+  document.getElementById('count').textContent=Q.length+' / '+Q.length;
+  var pct=Math.round(score/Q.length*100);
+  document.getElementById('score-big').textContent=score+' / '+Q.length;
+  var rank='Keep going!',msg='Some words still need practice. Re-play and beat your score!';
+  if(pct===100){rank='PERFECT!';msg='You are a Word Warriors champion!';}
+  else if(pct>=75){rank='Great job!';msg='Almost there — review the ones you missed.';}
+  else if(pct>=50){rank='Getting there!';msg='Halfway — try again to climb higher.';}
+  document.getElementById('score-rank').textContent=rank;
+  document.getElementById('score-msg').textContent=msg;
+}
+function restart(){cur=0;score=0;document.getElementById('quiz').classList.remove('hidden');
+  document.getElementById('end').classList.add('hidden');render();}
+render();
+</script>
+</body>
+</html>
