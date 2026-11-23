@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escape the Boring Lesson — English G8-1 Revision</title>
+<style>
+:root{
+  --bg:#0c1018; --panel:#151b28; --panel2:#1c2434; --ink:#eef3fb; --muted:#8b98b4;
+  --amber:#ffb703; --teal:#2ec4b6; --green:#3ddc84; --red:#ff5c7a; --blue:#6ea8fe;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  background:radial-gradient(1100px 700px at 50% -5%,#18202f,#0c1018 65%);
+  color:var(--ink);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+  display:flex;align-items:center;justify-content:center;padding:18px;
+}
+.wrap{width:100%;max-width:980px}
+.screen{display:none;animation:fade .35s ease}
+.screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+h1{font-size:clamp(26px,5.2vw,50px);font-weight:800;text-align:center;margin:0 0 6px;letter-spacing:-1px}
+h1 span{color:var(--amber)}
+.sub{text-align:center;color:var(--muted);font-size:clamp(13px,2.1vw,18px);margin:0 0 24px}
+.brief{background:var(--panel);border:1px solid #263149;border-radius:18px;padding:22px 26px;max-width:640px;margin:0 auto 26px}
+.brief h3{margin:0 0 12px;color:var(--teal);font-size:15px;text-transform:uppercase;letter-spacing:.9px}
+.brief p{margin:0 0 10px;line-height:1.6;color:#cdd6e8;font-size:15px}
+.brief .coop{color:var(--green);font-weight:700}
+.btn{
+  display:block;margin:0 auto;padding:16px 42px;border:0;border-radius:16px;cursor:pointer;
+  font-size:clamp(16px,2.5vw,21px);font-weight:800;font-family:inherit;
+  background:linear-gradient(135deg,var(--amber),#ffd166);color:#241a00;
+  box-shadow:0 10px 26px rgba(255,183,3,.3);transition:.18s;
+}
+.btn:hover{transform:translateY(-2px)}
+.hint{text-align:center;color:var(--muted);font-size:13px;margin-top:14px}
+
+/* HUD */
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.pill{background:var(--panel);border:1px solid #263149;border-radius:999px;padding:8px 16px;font-weight:700;font-size:14px}
+.pill b{color:var(--amber)}
+#clock{font-variant-numeric:tabular-nums;font-weight:800;font-size:clamp(16px,2.6vw,22px);color:var(--green)}
+#clock.low{color:var(--red);animation:pulse .8s infinite}
+@keyframes pulse{50%{opacity:.45}}
+.locks{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.lock{width:40px;height:40px;border-radius:10px;background:var(--panel);border:2px solid #263149;
+  display:flex;align-items:center;justify-content:center;font-size:17px;transition:.3s;filter:grayscale(1);opacity:.5}
+.lock.open{filter:none;opacity:1;background:rgba(61,220,132,.15);border-color:var(--green);transform:scale(1.08)}
+.bar{height:7px;background:#1c2434;border-radius:99px;overflow:hidden;margin-bottom:18px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--green));transition:width .4s}
+
+/* Question */
+.qcard{background:var(--panel);border:1px solid #263149;border-radius:20px;padding:clamp(18px,3vw,28px)}
+.qtag{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--teal);background:rgba(46,196,182,.12);padding:5px 12px;border-radius:999px;margin-bottom:14px}
+.qtext{font-size:clamp(17px,3vw,25px);font-weight:700;line-height:1.42;margin:0}
+.qtext u{text-decoration-color:var(--amber);text-underline-offset:4px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+@media(max-width:640px){.opts{grid-template-columns:1fr}}
+.opt{display:flex;align-items:center;gap:12px;padding:15px 17px;border-radius:14px;cursor:pointer;
+  background:var(--panel2);border:2px solid #263149;font-size:clamp(14px,2.1vw,17px);font-weight:600;
+  transition:.16s;text-align:left;color:var(--ink);font-family:inherit}
+.opt:hover:not(.locked){border-color:var(--teal);transform:translateX(4px)}
+.opt .k{width:27px;height:27px;flex:0 0 27px;border-radius:8px;background:#263149;display:flex;
+  align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--muted)}
+.opt.right{background:rgba(61,220,132,.16);border-color:var(--green)}
+.opt.right .k{background:var(--green);color:#08170e}
+.opt.wrong{background:rgba(255,92,122,.14);border-color:var(--red)}
+.opt.wrong .k{background:var(--red);color:#2a0710}
+.opt.locked{cursor:default}
+.fb{margin-top:16px;border-radius:15px;padding:17px 19px;display:none;animation:fade .3s}
+.fb.on{display:block}
+.fb.good{background:rgba(61,220,132,.1);border:1px solid rgba(61,220,132,.38)}
+.fb.bad{background:rgba(255,92,122,.09);border:1px solid rgba(255,92,122,.32)}
+.fb .head{font-weight:800;font-size:clamp(15px,2.3vw,19px);margin-bottom:7px}
+.fb.good .head{color:var(--green)} .fb.bad .head{color:var(--red)}
+.fb .why{font-size:clamp(13px,1.9vw,15.5px);color:#c8d2e6;line-height:1.55}
+.fb .why b{color:var(--amber)}
+.next{display:none;margin-top:15px} .next.on{display:block}
+
+/* End */
+.rank{font-size:clamp(24px,4.8vw,42px);font-weight:800;text-align:center;margin:0 0 8px}
+.rankline{text-align:center;color:var(--muted);font-size:clamp(14px,2.1vw,17px);margin:0 0 24px}
+.stats{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:26px}
+.st{padding:16px 26px;border-radius:15px;text-align:center;background:var(--panel);border:1px solid #263149;min-width:120px}
+.st .n{font-size:clamp(24px,4.6vw,36px);font-weight:800;line-height:1;color:var(--amber)}
+.st .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:6px}
+.recap{background:var(--panel);border:1px solid #263149;border-radius:16px;padding:20px 24px;max-width:660px;margin:0 auto}
+.recap h3{margin:0 0 12px;font-size:15px;color:var(--teal);text-transform:uppercase;letter-spacing:.8px}
+.recap ul{margin:0;padding-left:20px;color:#c8d2e6;line-height:1.7}
+.recap li b{color:var(--amber)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="screen on" id="s-start">
+  <h1>Escape the <span>Boring Lesson</span></h1>
+  <p class="sub">English Grade 8-1 · Unit 1 &amp; 2 Revision · Holidays · Tenses · Families</p>
+  <div class="brief">
+    <h3>Your mission</h3>
+    <p>The classroom door is locked. There are <b>6 locks</b> on the door.</p>
+    <p>Answer the revision questions to break each lock. You have <b>8 minutes</b>.</p>
+    <p class="coop">🤝 You work TOGETHER — this is one team against the clock, not against each other.</p>
+    <p>Every correct answer breaks a lock. Help each other. Talk it through. You both escape, or nobody does.</p>
+  </div>
+  <button class="btn" onclick="start()">Start the escape →</button>
+  <p class="hint">Keys <b>1–4</b> to answer · <b>Space</b> for next</p>
+</div>
+
+<div class="screen" id="s-game">
+  <div class="hud">
+    <div class="pill">Question <b><span id="qn">1</span></b>/<span id="qtot">18</span></div>
+    <div id="clock">08:00</div>
+    <div class="pill">Correct <b><span id="right">0</span></b></div>
+  </div>
+  <div class="locks" id="locks"></div>
+  <div class="bar"><i id="prog"></i></div>
+
+  <div class="qcard">
+    <div class="qtag" id="tag">Loading</div>
+    <p class="qtext" id="qtext">Loading…</p>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb">
+      <div class="head" id="fbhead"></div>
+      <div class="why" id="fbwhy"></div>
+    </div>
+    <button class="btn next" id="nextbtn" onclick="next()">Next →</button>
+  </div>
+</div>
+
+<div class="screen" id="s-end">
+  <div class="rank" id="rank"></div>
+  <p class="rankline" id="rankline"></p>
+  <div class="stats">
+    <div class="st"><div class="n" id="fright">0</div><div class="l">Correct</div></div>
+    <div class="st"><div class="n" id="flocks">0</div><div class="l">Locks broken</div></div>
+    <div class="st"><div class="n" id="ftime">0:00</div><div class="l">Time used</div></div>
+  </div>
+  <div class="recap">
+    <h3>Before the exam, make sure you can…</h3>
+    <ul>
+      <li>Use <b>past simple</b> for finished actions: <i>We <b>went</b> to the beach.</i></li>
+      <li>Choose <b>present simple</b> (habits) vs <b>present continuous</b> (now): <i>I <b>play</b> chess / I <b>am playing</b> now.</i></li>
+      <li>Use <b>going to</b> (plans) vs <b>will</b> (decisions): <i>I<b>'m going to</b> visit / I<b>'ll</b> help you.</i></li>
+      <li>Use <b>used to</b> for past habits: <i>He <b>used to</b> go every day.</i></li>
+      <li>Know your <b>holiday words</b>: boat trip, souvenir, old town, hire, theatre, theme park, market.</li>
+    </ul>
+  </div>
+  <button class="btn" style="margin-top:24px" onclick="location.reload()">Try again 🔁</button>
+</div>
+
+</div>
+<script>
+/* ============================================================
+   ESCAPE THE BORING LESSON — English G8-1 revision (CO-OP)
+   Scope (verified): holidays vocab · past simple · present
+   simple/continuous · going to/will · used to · word forms
+   Class reality: 2 students, B1 — no 1v1 duel.
+   ============================================================ */
+
+const TOTAL_SECONDS = 8*60;
+
+const QS = [
+ {tag:"Holidays", text:'We hired a car and drove along the coast to see the ______.',
+  o:["souvenir","sights","market","theatre"], c:1,
+  why:'<b>sights</b> — the interesting places you visit.'},
+ {tag:"Holidays", text:'The hotel had a pool and a games room — great ______ for the kids.',
+  o:["facilities","souvenirs","sights","tours"], c:0,
+  why:'<b>facilities</b> = the useful things a place offers.'},
+ {tag:"Holidays", text:'We stayed in a small ______ by the sea with a kitchen and two bedrooms.',
+  o:["theatre","flat","market","tour"], c:1,
+  why:'<b>flat</b> — a place to stay with rooms.'},
+ {tag:"Holidays", text:'I bought a postcard and a key ring as ______ for my friends.',
+  o:["facilities","souvenirs","sights","walks"], c:1,
+  why:'<b>souvenirs</b> — things you buy to remember a trip.'},
+ {tag:"Holidays", text:'We went on a guided ______ around the old city with a local expert.',
+  o:["tour","hire","souvenir","market"], c:0,
+  why:'A guided <b>tour</b>.'},
+ {tag:"Past simple", text:'We ______ at the hotel very late because our flight was delayed.',
+  o:["arrive","arrives","arrived","arriving"], c:2,
+  why:'Regular past = <b>arrived</b>.'},
+ {tag:"Past simple", text:'I ______ my phone on the bus, but someone found it.',
+  o:["leave","leaves","left","leaving"], c:2,
+  why:'Irregular past of <i>leave</i> = <b>left</b>.'},
+ {tag:"Past simple", text:'They ______ in a nice restaurant on the last night.',
+  o:["eat","eats","ate","eating"], c:2,
+  why:'Irregular past of <i>eat</i> = <b>ate</b>.'},
+ {tag:"Past simple", text:'______ she enjoy the trip?',
+  o:["Do","Did","Was","Is"], c:1,
+  why:'Past question = <b>Did</b> + base verb.'},
+ {tag:"Present tenses", text:'She ______ to music every evening after dinner.',
+  o:["listens","is listening","listened","listen"], c:0,
+  why:'<b>Every evening</b> = habit → <b>listens</b>.'},
+ {tag:"Present tenses", text:'Listen! Someone ______ at the door.',
+  o:["knocks","is knocking","knocked","knock"], c:1,
+  why:'Now → <b>is knocking</b>.'},
+ {tag:"Present tenses", text:'He ______ football for the school team this season.',
+  o:["plays","is playing","played","play"], c:0,
+  why:'A regular situation → <b>plays</b>.'},
+ {tag:"Present tenses", text:'I ______ a really good book at the moment.',
+  o:["read","am reading","readed","reads"], c:1,
+  why:'<b>At the moment</b> → <b>am reading</b>.'},
+ {tag:"going to / will", text:'I\'ve decided! Next year I ______ learn to play the guitar.',
+  o:["will","am going to","went","go"], c:1,
+  why:'A decision already made → <b>am going to</b>.'},
+ {tag:"going to / will", text:'The phone is ringing. I ______ answer it.',
+  o:["am going to","will","would","do"], c:1,
+  why:'Deciding as you speak → <b>will</b>.'},
+ {tag:"going to / will", text:'Look at those clouds — it ______ rain.',
+  o:["will","is going to","did","does"], c:1,
+  why:'Evidence you can see → <b>is going to</b>.'},
+ {tag:"going to / will", text:'I ______ carry those bags for you. They look heavy.',
+  o:["am going to","will","am","do"], c:1,
+  why:'An offer, decided now → <b>will</b>.'},
+ {tag:"used to", text:'I ______ live in the countryside when I was small.',
+  o:["use to","used to","using to","uses to"], c:1,
+  why:'Past situation → <b>used to live</b>.'},
+ {tag:"used to", text:'He ______ like coffee, but now he drinks it every day.',
+  o:["didn't use to","didn't used to","not use to","doesn't use to"], c:0,
+  why:'Negative = <b>didn\'t use to</b> + base verb.'},
+ {tag:"used to", text:'______ you use to play any sports at primary school?',
+  o:["Do","Did","Are","Were"], c:1,
+  why:'Question = <b>Did</b> you use to…?'},
+ {tag:"used to", text:'My dad ______ have long hair when he was younger.',
+  o:["use to","used to","uses to","using to"], c:1,
+  why:'Past habit → <b>used to have</b>.'},
+];
+
+const LOCKS = ["🔒","🔒","🔒","🔒","🔒","🔒"];
+const $=id=>document.getElementById(id);
+let i=0, right=0, locksOpen=0, t0=0, timer=null, remaining=TOTAL_SECONDS;
+
+function start(){
+  $("s-start").classList.remove("on");
+  $("s-game").classList.add("on");
+  $("qtot").textContent=QS.length;
+  paintLocks();
+  t0=Date.now();
+  remaining=TOTAL_SECONDS;
+  tick();
+  timer=setInterval(tick,1000);
+  render();
+}
+
+function tick(){
+  remaining--;
+  if(remaining<=0){ finish(true); return; }
+  const m=Math.floor(remaining/60), s=remaining%60;
+  const el=$("clock");
+  el.textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  el.classList.toggle("low", remaining<=60);
+}
+
+function paintLocks(){
+  const box=$("locks"); box.innerHTML="";
+  LOCKS.forEach((l,n)=>{
+    const d=document.createElement("div");
+    d.className="lock"+(n<locksOpen?" open":"");
+    d.textContent=n<locksOpen?"🔓":"🔒";
+    box.appendChild(d);
+  });
+}
+
+function render(){
+  const q=QS[i];
+  $("qn").textContent=i+1;
+  $("prog").style.width=(i/QS.length*100)+"%";
+  $("tag").textContent=q.tag;
+  $("qtext").innerHTML=q.text;
+  $("fb").className="fb";
+  $("nextbtn").classList.remove("on");
+  const box=$("opts"); box.innerHTML="";
+  q.o.forEach((t,idx)=>{
+    const b=document.createElement("button");
+    b.className="opt";
+    b.innerHTML='<span class="k">'+(idx+1)+'</span><span>'+t+'</span>';
+    b.onclick=()=>answer(idx);
+    box.appendChild(b);
+  });
+}
+
+function answer(idx){
+  const q=QS[i];
+  const btns=[...document.querySelectorAll(".opt")];
+  if(btns[0].classList.contains("locked")) return;
+  btns.forEach(b=>b.classList.add("locked"));
+  const ok=idx===q.c;
+  btns[q.c].classList.add("right");
+  if(!ok) btns[idx].classList.add("wrong");
+  const fb=$("fb");
+  if(ok){
+    right++;
+    // break a lock every 3 correct answers (6 locks / 18 questions)
+    if(right%3===0 && locksOpen<6){ locksOpen++; paintLocks(); }
+    fb.className="fb on good";
+    $("fbhead").textContent="✅ Correct — lock progress!";
+  }else{
+    fb.className="fb on bad";
+    $("fbhead").textContent="❌ Not quite — the answer is “"+q.o[q.c]+"”";
+  }
+  $("fbwhy").innerHTML=q.why;
+  $("right").textContent=right;
+  $("nextbtn").classList.add("on");
+}
+
+function next(){
+  i++;
+  if(i>=QS.length || locksOpen>=6){ finish(false); return; }
+  render();
+}
+
+function finish(timeUp){
+  clearInterval(timer);
+  $("s-game").classList.remove("on");
+  $("s-end").classList.add("on");
+  const used=Math.min(TOTAL_SECONDS, Math.floor((Date.now()-t0)/1000));
+  $("fright").textContent=right;
+  $("flocks").textContent=locksOpen;
+  $("ftime").textContent=Math.floor(used/60)+":"+String(used%60).padStart(2,"0");
+  let rank,line;
+  if(locksOpen>=6){
+    rank="🚪 YOU ESCAPED!";
+    line="All six locks broken — you got out with time to spare. Brilliant teamwork.";
+  }else if(timeUp){
+    rank="⏰ Time's up!";
+    line="You broke "+locksOpen+" of 6 locks before the clock ran out. So close — run it again.";
+  }else{
+    rank="🔓 Almost out";
+    line="You broke "+locksOpen+" of 6 locks. Play again and break them all.";
+  }
+  $("rank").textContent=rank;
+  $("rankline").textContent=line;
+}
+
+document.addEventListener("keydown",e=>{
+  if(!$("s-game").classList.contains("on")){
+    if(e.code==="Space" && $("s-start").classList.contains("on")){ e.preventDefault(); start(); }
+    return;
+  }
+  if(["1","2","3","4"].includes(e.key)) answer(parseInt(e.key)-1);
+  if(e.code==="Space" && $("nextbtn").classList.contains("on")){ e.preventDefault(); next(); }
+});
+</script>
+</body>
+</html>
