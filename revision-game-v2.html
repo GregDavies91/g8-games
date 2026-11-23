@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escape the Boring Lesson V2 — English G8-1 Revision</title>
+<style>
+:root{--bg:#0c1018;--panel:#151b28;--panel2:#1c2434;--ink:#eef3fb;--muted:#8b98b4;--amber:#ffb703;--teal:#2ec4b6;--green:#3ddc84;--red:#ff5c7a;--blue:#6ea8fe;--violet:#c77dff;--rose:#ff6b9d}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(1100px 700px at 50% -5%,#18202f,#0c1018 65%);color:var(--ink);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:16px}
+.wrap{width:100%;max-width:1020px}
+.screen{display:none;animation:fade .35s ease}.screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+h1{font-size:clamp(25px,5vw,48px);font-weight:800;text-align:center;margin:0 0 6px;letter-spacing:-1px}
+h1 span{color:var(--amber)}
+.sub{text-align:center;color:var(--muted);font-size:clamp(13px,2.1vw,18px);margin:0 0 22px}
+.brief{background:var(--panel);border:1px solid #263149;border-radius:18px;padding:22px 26px;max-width:680px;margin:0 auto 22px}
+.brief h3{margin:0 0 10px;color:var(--teal);font-size:15px;text-transform:uppercase;letter-spacing:.9px}
+.brief p{margin:0 0 9px;line-height:1.6;color:#cdd6e8;font-size:15px}
+.brief .coop{color:var(--green);font-weight:700}
+.brief ul{margin:6px 0 0;padding-left:20px;color:#cdd6e8;font-size:14.5px;line-height:1.7}
+.btn{display:block;margin:0 auto;padding:15px 40px;border:0;border-radius:15px;cursor:pointer;font-size:clamp(16px,2.4vw,20px);font-weight:800;font-family:inherit;background:linear-gradient(135deg,var(--amber),#ffd166);color:#241a00;box-shadow:0 10px 26px rgba(255,183,3,.3);transition:.18s}
+.btn:hover{transform:translateY(-2px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.hint{text-align:center;color:var(--muted);font-size:13px;margin-top:13px}
+.hud{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.pill{background:var(--panel);border:1px solid #263149;border-radius:999px;padding:7px 15px;font-weight:700;font-size:13.5px}
+.pill b{color:var(--amber)}
+#clock{font-variant-numeric:tabular-nums;font-weight:800;font-size:clamp(15px,2.5vw,21px);color:var(--green)}
+#clock.low{color:var(--red);animation:pulse .8s infinite}
+@keyframes pulse{50%{opacity:.45}}
+.turn{font-weight:800;font-size:clamp(13px,2vw,16px);padding:7px 16px;border-radius:999px;transition:.25s}
+.turn.p1{background:rgba(110,168,254,.2);color:#bcd0ff}
+.turn.p2{background:rgba(199,125,255,.2);color:#e2c8ff}
+.lifelines{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.ll{display:flex;align-items:center;gap:7px;background:var(--panel);border:2px solid #263149;border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:700;font-size:13px;color:var(--ink);font-family:inherit;transition:.2s;position:relative}
+.ll:hover:not(.used){border-color:var(--violet);transform:translateY(-2px)}
+.ll .ic{font-size:16px}
+.ll .count{background:var(--violet);color:#1a0f24;border-radius:99px;padding:1px 7px;font-size:11px;font-weight:800}
+.ll.used{opacity:.35;cursor:not-allowed;text-decoration:line-through;border-color:#263149}
+.ll.used .count{background:#4a5273;color:#98a2c0}
+.roundbar{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.roundbar .lbl{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.9px;white-space:nowrap}
+.bar{flex:1;height:10px;background:#1c2434;border-radius:99px;overflow:hidden;position:relative}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--green));transition:width .45s cubic-bezier(.4,0,.2,1)}
+.bar.full i{background:linear-gradient(90deg,var(--green),var(--amber))}
+.locks{display:flex;gap:10px;justify-content:center;margin:12px 0 16px}
+.lock{width:46px;height:46px;border-radius:11px;background:var(--panel);border:2px solid #263149;display:flex;align-items:center;justify-content:center;font-size:20px;transition:.3s;filter:grayscale(1);opacity:.45}
+.lock.open{filter:none;opacity:1;background:rgba(61,220,132,.15);border-color:var(--green);transform:scale(1.08)}
+.lock.breaking{animation:lockbreak .9s ease forwards}
+@keyframes lockbreak{0%{transform:scale(1.08) rotate(0);border-color:var(--green);background:rgba(61,220,132,.15)}25%{transform:scale(1.28) rotate(-12deg);border-color:var(--amber);background:rgba(255,183,3,.3);box-shadow:0 0 26px rgba(255,183,3,.75)}50%{transform:scale(1.32) rotate(12deg);border-color:var(--amber);box-shadow:0 0 34px rgba(255,183,3,.9)}75%{transform:scale(1.15) rotate(-6deg);box-shadow:0 0 18px rgba(61,220,132,.6)}100%{transform:scale(1.08) rotate(0);border-color:var(--green);background:rgba(61,220,132,.15);box-shadow:none}}
+.overlay{position:fixed;inset:0;background:rgba(8,11,17,.92);display:none;align-items:center;justify-content:center;z-index:50;text-align:center;padding:20px}
+.overlay.on{display:flex;animation:fade .3s}
+.overlay .inner{max-width:640px}
+.overlay .big{font-size:clamp(30px,7vw,64px);font-weight:800;line-height:1.05;margin:0 0 12px;background:linear-gradient(135deg,var(--green),var(--amber));-webkit-background-clip:text;background-clip:text;color:transparent}
+.overlay .txt{font-size:clamp(15px,2.4vw,20px);color:#cdd6e8;line-height:1.6;margin:0 0 22px}
+.overlay .stats{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.overlay .st{background:var(--panel);border:1px solid #263149;border-radius:14px;padding:14px 24px;min-width:110px}
+.overlay .st .n{font-size:clamp(22px,4vw,32px);font-weight:800;color:var(--amber);line-height:1}
+.overlay .st .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:5px}
+.qcard{background:var(--panel);border:1px solid #263149;border-radius:20px;padding:clamp(17px,2.8vw,26px)}
+.qtag{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;padding:5px 12px;border-radius:999px;margin-bottom:12px}
+.tag-easy{background:rgba(61,220,132,.15);color:var(--green)}
+.tag-med{background:rgba(255,183,3,.15);color:var(--amber)}
+.tag-hard{background:rgba(255,92,122,.15);color:var(--red)}
+.tag-trick{background:rgba(199,125,255,.15);color:var(--violet)}
+.qtext{font-size:clamp(17px,2.9vw,24px);font-weight:700;line-height:1.42;margin:0}
+.qtext u{text-decoration-color:var(--amber);text-underline-offset:4px}
+.clue{margin-top:12px;background:rgba(199,125,255,.12);border:1px dashed rgba(199,125,255,.5);border-radius:12px;padding:12px 15px;font-size:14.5px;color:#e2c8ff;display:none;animation:fade .3s}
+.clue.on{display:block}
+.clue b{color:var(--violet);text-transform:uppercase;font-size:11px;letter-spacing:.9px;display:block;margin-bottom:4px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:16px}
+@media(max-width:640px){.opts{grid-template-columns:1fr}}
+.opt{display:flex;align-items:center;gap:11px;padding:14px 16px;border-radius:13px;cursor:pointer;background:var(--panel2);border:2px solid #263149;font-size:clamp(14px,2vw,16.5px);font-weight:600;transition:.16s;text-align:left;color:var(--ink);font-family:inherit}
+.opt:hover:not(.locked){border-color:var(--teal);transform:translateX(4px)}
+.opt .k{width:26px;height:26px;flex:0 0 26px;border-radius:7px;background:#263149;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--muted)}
+.opt.right{background:rgba(61,220,132,.16);border-color:var(--green)}
+.opt.right .k{background:var(--green);color:#08170e}
+.opt.wrong{background:rgba(255,92,122,.14);border-color:var(--red)}
+.opt.wrong .k{background:var(--red);color:#2a0710}
+.opt.locked{cursor:default}
+.opt.removed{opacity:.28;text-decoration:line-through;cursor:default}
+.fb{margin-top:15px;border-radius:14px;padding:16px 18px;display:none;animation:fade .3s}
+.fb.on{display:block}
+.fb.good{background:rgba(61,220,132,.1);border:1px solid rgba(61,220,132,.38)}
+.fb.bad{background:rgba(255,92,122,.09);border:1px solid rgba(255,92,122,.32)}
+.fb .head{font-weight:800;font-size:clamp(15px,2.2vw,18px);margin-bottom:6px}
+.fb.good .head{color:var(--green)} .fb.bad .head{color:var(--red)}
+.fb .why{font-size:clamp(13px,1.9vw,15px);color:#c8d2e6;line-height:1.55}
+.fb .why b{color:var(--amber)}
+.next{display:none;margin-top:14px} .next.on{display:block}
+.rank{font-size:clamp(23px,4.6vw,40px);font-weight:800;text-align:center;margin:0 0 8px}
+.rankline{text-align:center;color:var(--muted);font-size:clamp(14px,2vw,17px);margin:0 0 22px}
+.stats{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+.st{padding:15px 24px;border-radius:14px;text-align:center;background:var(--panel);border:1px solid #263149;min-width:115px}
+.st .n{font-size:clamp(22px,4.4vw,34px);font-weight:800;line-height:1;color:var(--amber)}
+.st .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:5px}
+.recap{background:var(--panel);border:1px solid #263149;border-radius:16px;padding:20px 24px;max-width:680px;margin:0 auto}
+.recap h3{margin:0 0 11px;font-size:15px;color:var(--teal);text-transform:uppercase;letter-spacing:.8px}
+.recap ul{margin:0;padding-left:20px;color:#c8d2e6;line-height:1.7}
+.recap li b{color:var(--amber)}
+.diff-legend{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:8px 0 16px;font-size:13px}
+.diff-legend span{padding:4px 12px;border-radius:99px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="screen on" id="s-start">
+  <h1>Escape the <span>Boring Lesson</span> <span style="font-size:.45em;vertical-align:middle;color:var(--muted)">V2</span></h1>
+  <p class="sub">English G8-1 · Unit 1 &amp; 2 Midterm Revision · 5 Rounds · 30 Questions</p>
+  <div class="brief">
+    <h3>Your mission</h3>
+    <p>The classroom door is locked. <b>5 rounds</b>, <b>4 locks</b>.</p>
+    <p>Answer correctly to fill the progress bar. When it hits the top — <b>lock breaks</b>.</p>
+    <p class="coop">🤝 One team against the clock. Take turns, help each other.</p>
+    <p><b>25 minutes</b> · 📞 Phone a Friend ×3 · 💡 Clue ×3</p>
+  </div>
+  <div class="diff-legend">
+    <span class="tag-easy">★ Easy</span>
+    <span class="tag-med">★★ Medium</span>
+    <span class="tag-hard">★★★ Hard</span>
+    <span class="tag-trick">★★★★ Trap</span>
+  </div>
+  <button class="btn" onclick="start()">Start the escape →</button>
+  <p class="hint">Keys <b>1–4</b> to answer · <b>H</b> clue · <b>P</b> phone a friend · <b>Space</b> next</p>
+</div>
+
+<div class="screen" id="s-game">
+  <div class="hud">
+    <div class="pill">Q <b><span id="qn">1</span></b>/<span id="qtot">30</span></div>
+    <div class="turn p1" id="turn">🔵 Player 1</div>
+    <div id="clock">25:00</div>
+  </div>
+  <div class="lifelines">
+    <button class="ll" id="llPhone" onclick="phoneFriend()">📞 Phone a Friend <span class="count" id="phoneCount">3</span></button>
+    <button class="ll" id="llClue" onclick="useClue()">💡 Clue <span class="count" id="clueCount">3</span></button>
+  </div>
+  <div class="roundbar">
+    <span class="lbl">Round <span id="roundNum">1</span> progress</span>
+    <div class="bar" id="bar"><i id="prog"></i></div>
+    <span class="pill" style="padding:5px 12px;font-size:12.5px">✓ <b><span id="right">0</span></b></span>
+  </div>
+  <div class="locks" id="locks"></div>
+  <div class="qcard">
+    <div class="qtag" id="tag">Loading</div>
+    <p class="qtext" id="qtext">Loading…</p>
+    <div class="clue" id="cluebox"><b>💡 Clue</b><span id="cluetext"></span></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb"><div class="head" id="fbhead"></div><div class="why" id="fbwhy"></div></div>
+    <button class="btn next" id="nextbtn" onclick="next()">Next →</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="inner">
+    <div class="big" id="ovTitle">🔓 LOCK BROKEN!</div>
+    <p class="txt" id="ovText"></p>
+    <div class="stats">
+      <div class="st"><div class="n" id="ovCorrect">0</div><div class="l">Correct this round</div></div>
+      <div class="st"><div class="n" id="ovLocks">0</div><div class="l">Locks broken</div></div>
+      <div class="st"><div class="n" id="ovLeft">0</div><div class="l">Locks left</div></div>
+    </div>
+    <button class="btn" id="ovBtn" onclick="nextRound()">Start Round <span id="ovNext">2</span> →</button>
+  </div>
+</div>
+
+<div class="screen" id="s-end">
+  <div class="rank" id="rank"></div>
+  <p class="rankline" id="rankline"></p>
+  <div class="stats">
+    <div class="st"><div class="n" id="fright">0</div><div class="l">Correct</div></div>
+    <div class="st"><div class="n" id="fwrong">0</div><div class="l">Wrong</div></div>
+    <div class="st"><div class="n" id="flocks">0</div><div class="l">Locks broken</div></div>
+    <div class="st"><div class="n" id="ftime">0:00</div><div class="l">Time used</div></div>
+  </div>
+  <div class="recap">
+    <h3>Before the exam, make sure you can…</h3>
+    <ul id="recapList"></ul>
+  </div>
+  <button class="btn" style="margin-top:22px" onclick="location.reload()">Try again 🔁</button>
+</div>
+
+</div>
+<script>
+var TOTAL_SECONDS = 25*60;
+var ROUND_SIZE = 6;
+var TOTAL_ROUNDS = 5;
+
+var QS = [
+{tag:'Holidays',diff:'easy',text:'We hired a car and drove along the coast to see the ______.',o:['souvenir','sights','market','theatre'],c:1,why:'<b>sights</b> - the interesting places you visit.',clue:'Think about the places you go to LOOK at when you are a tourist.'},
+{tag:'Holidays',diff:'easy',text:'The hotel had a pool and a games room - great ______ for the kids.',o:['facilities','souvenirs','sights','tours'],c:0,why:'<b>facilities</b> = the useful things a place offers.',clue:'This word means the things a place gives you - a pool, a gym, a games room.'},
+{tag:'Holidays',diff:'easy',text:'We stayed in a small ______ by the sea with a kitchen.',o:['theatre','flat','market','tour'],c:1,why:'<b>flat</b> - a place to stay with rooms.',clue:'It is a home with rooms - not a hotel. Americans say apartment.'},
+{tag:'Holidays',diff:'easy',text:'I bought a postcard and a key ring as ______ for my friends.',o:['facilities','souvenirs','sights','walks'],c:1,why:'<b>souvenirs</b> - things you buy to remember a trip.',clue:'A little object you buy to remember a holiday and take home.'},
+{tag:'Holidays',diff:'easy',text:'We went on a guided ______ around the old city.',o:['tour','hire','souvenir','market'],c:0,why:'A guided <b>tour</b>.',clue:'A guide shows you around. It starts with T.'},
+{tag:'Holidays',diff:'easy',text:'We ______ bikes for the day - you can rent them from the shop.',o:['sights','hire','facilities','tour'],c:1,why:'<b>hire</b> = pay to use something for a short time.',clue:'It means to pay to use something for a short time. (Americans say rent.)'},
+{tag:'Past simple',diff:'med',text:'We ______ at the hotel very late because our flight was delayed.',o:['arrive','arrives','arrived','arriving'],c:2,why:'Regular past = <b>arrived</b>.',clue:'Regular verb - add <b>-ed</b> for the past.'},
+{tag:'Past simple',diff:'med',text:'I ______ my phone on the bus, but someone found it.',o:['leave','leaves','left','leaving'],c:2,why:'Irregular past of <i>leave</i> = <b>left</b>.',clue:'This verb is IRREGULAR. Its past form has only four letters.'},
+{tag:'Past continuous',diff:'med',text:'At 8 pm yesterday, we ______ dinner at a nice restaurant.',o:['eat','eats','ate','were eating'],c:3,why:'Past continuous = <b>were eating</b> - an action in progress at a specific time.',clue:"'At 8 pm yesterday' = a moment in the past - past <b>continuous</b>."},
+{tag:'Past continuous',diff:'med',text:'It ______ all afternoon, so we stayed inside.',o:['rain','rained','was raining','rains'],c:2,why:'Past continuous = <b>was raining</b> - a background action.',clue:"'All afternoon' = a longer background action - past <b>continuous</b>."},
+{tag:'Past simple/continuous',diff:'med',text:'I ______ TV when the phone rang.',o:['watch','am watching','was watching','watched'],c:2,why:'Longer action in progress + interruption -> <b>was watching</b>.',clue:'One action was happening when another stopped it - past <b>continuous</b>.'},
+{tag:'Past simple/continuous',diff:'med',text:'She ______ while her brother ______ basketball.',o:['studied / played','was studying / played','studied / was playing','was studying / was playing'],c:3,why:'Longer action (was studying) + shorter action (played).',clue:'The longer action = past continuous. The shorter = past simple.'},
+{tag:'Past perfect',diff:'hard',text:'When we arrived, the film ______ already.',o:['start','started','had started','was starting'],c:2,why:'Past perfect = <b>had started</b> - the earlier action.',clue:"'Already' + past perfect tells you one thing happened BEFORE another past action."},
+{tag:'Past perfect',diff:'hard',text:'She was tired because she ______ well the night before.',o:['did not sleep','does not sleep','had not slept','is not sleeping'],c:2,why:'Past perfect negative = <b>had not slept</b>.',clue:"'The night before' = before another past moment - past <b>perfect</b>."},
+{tag:'Past perfect vs simple',diff:'hard',text:'By the time we got home, everyone ______ to bed.',o:['went','had gone','was going','has gone'],c:1,why:"'By the time' + past perfect = <b>had gone</b>.",clue:'One action was completed before another past action - past <b>perfect</b>.'},
+{tag:'Used to',diff:'hard',text:'I ______ live in the countryside when I was small.',o:['use to','used to','was used to','am used to'],c:1,why:'Past situation -> <b>used to live</b>.',clue:'Past situation that is finished now. Remember the -d at the end.'},
+{tag:'Used to',diff:'hard',text:'He ______ like coffee, but now he drinks it every day.',o:["didn't use to","didn't used to","doesn't use to","hadn't used to"],c:0,why:"Negative = <b>didn't use to</b> + base verb.",clue:"After didn't, the word use has NO -d."},
+{tag:'Used to vs be used to',diff:'hard',text:'I ______ the noise now - it is normal for me.',o:['used to','am used to','did use to','was used'],c:1,why:'Present habit = <b>am used to</b> (= accustomed to).',clue:"'Now - it is normal' = accustomed to - <b>be used to</b>."},
+{tag:'Present perfect',diff:'hard',text:'I ______ already ______ to three countries this year.',o:['have / travelled','did / travel','am / travelling','will / travel'],c:0,why:'Present perfect = <b>have travelled</b> - experience up to now.',clue:"'This year' + unfinished time - present <b>perfect</b>."},
+{tag:'Present perfect',diff:'hard',text:'She ______ already ______ her homework.',o:['has / finished','did / finish','is / finishing','will / finish'],c:0,why:'Present perfect = <b>has finished</b> - just completed.',clue:"'Already' + present perfect = just finished. She = <b>has</b>."},
+{tag:'Present perfect',diff:'hard',text:'______ you ever ______ a foreign film in English?',o:['Did / see','Have / seen','Do / see','Are / seeing'],c:1,why:'Experience = <b>Have you ever seen</b>?',clue:"'Ever' = experience up to now - present <b>perfect</b>."},
+{tag:'Present perfect + yet',diff:'hard',text:'Have you finished your project ______?',o:['already','yet','just','ever'],c:1,why:'Question + not yet -> <b>yet</b>.',clue:'In questions and negatives, we use <b>yet</b> (not already).'},
+{tag:'Generations vocab',diff:'hard',text:'A person between 13 and 19 years old is called an ______.',o:['adult','adolescent','elderly','infant'],c:1,why:'<b>Adolescent</b> = teenager.',clue:'It starts with a and means a teenager.'},
+{tag:'Generations vocab',diff:'hard',text:'A person aged 80+ is ______.',o:['an adolescent','middle-aged','elderly','an infant'],c:2,why:'<b>Elderly</b> = very old.',clue:'It means very old, usually 80+.'},
+{tag:'Past perfect cont.',diff:'trick',text:'When I arrived, she ______ for two hours.',o:['studied','had studied','had been studying','was studying'],c:2,why:'Duration before another past action -> <b>had been studying</b>.',clue:"'For two hours' + before another past action - past perfect <b>continuous</b>."},
+{tag:'Present perfect vs simple',diff:'trick',text:'I ______ that film three times this month.',o:['saw','have seen','was seeing','see'],c:1,why:"'This month' (unfinished) = <b>have seen</b>.",clue:"'This month' is not finished yet - present <b>perfect</b>."},
+{tag:'Past perfect',diff:'hard',text:'They ______ the hotel before the rain started.',o:['left','had left','were leaving','have left'],c:1,why:'Earlier past = <b>had left</b>.',clue:'One action finished before another past action - past <b>perfect</b>.'},
+{tag:'Generations vocab',diff:'med',text:'My grandmother is in her ______.',o:['twenties','adolescence','elderly','seventies'],c:3,why:'Age range = <b>seventies</b>.',clue:'We say in her + tens for age ranges.'},
+{tag:'Present perfect',diff:'hard',text:'He ______ never ______ a camel.',o:['has / ridden','did / ride','is / riding','will / ride'],c:0,why:'Negative experience = <b>has never ridden</b>.',clue:"'Never' + experience - present <b>perfect</b>. He = <b>has</b>."},
+{tag:'Mixed review',diff:'trick',text:'______ you ever ______ a holiday in another country?',o:['Did / have','Have / had','Do / have','Are / having'],c:1,why:'Experience = <b>Have you ever had</b>?',clue:"'Ever' = experience up to now - present <b>perfect</b>."}
+];
+
+var $=function(id){return document.getElementById(id);};
+var i=0, right=0, wrong=0, locksOpen=0, roundCorrect=0, t0=0, timer=null, remaining=TOTAL_SECONDS;
+var turn=1, phones=3, clues=3, clueUsedThisQ=false, phoneUsedThisQ=false, awaitingRound=false;
+
+function start(){
+  $('s-start').classList.remove('on');
+  $('s-game').classList.add('on');
+  $('qtot').textContent=QS.length;
+  paintLocks(); updateLifelines(); updateTurn();
+  t0=Date.now(); remaining=TOTAL_SECONDS; tick();
+  timer=setInterval(tick,1000);
+  render();
+}
+
+function tick(){
+  remaining--;
+  if(remaining<=0){ finish(true); return; }
+  var m=Math.floor(remaining/60), s=remaining%60;
+  var el=$('clock');
+  el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  el.classList.toggle('low', remaining<=60);
+}
+
+function paintLocks(breakingIdx){
+  var box=$('locks'); box.innerHTML='';
+  for(var n=0;n<TOTAL_ROUNDS;n++){
+    var d=document.createElement('div');
+    var cls='lock'+(n<locksOpen?' open':'');
+    if(breakingIdx!==undefined && n===breakingIdx) cls+=' breaking';
+    d.className=cls;
+    d.textContent=n<locksOpen?'\u{1F513}':'\u{1F512}';
+    box.appendChild(d);
+  }
+}
+
+function updateTurn(){
+  var el=$('turn');
+  el.className='turn '+(turn===1?'p1':'p2');
+  el.textContent=(turn===1?'\u{1F535} Player 1':'\u{1F7E3} Player 2')+"'s turn";
+}
+
+function updateLifelines(){
+  var p=$('llPhone'), c=$('llClue');
+  $('phoneCount').textContent=phones;
+  $('clueCount').textContent=clues;
+  p.classList.toggle('used', phones<=0);
+  c.classList.toggle('used', clues<=0);
+  p.disabled = phones<=0;
+  c.disabled = clues<=0 || clueUsedThisQ;
+}
+
+function render(){
+  var q=QS[i];
+  var rn=Math.floor(i/ROUND_SIZE)+1;
+  $('roundNum').textContent=Math.min(rn,TOTAL_ROUNDS);
+  $('qn').textContent=i+1;
+  var doneInRound = i % ROUND_SIZE;
+  var pct = (doneInRound/ROUND_SIZE)*100;
+  $('prog').style.width=pct+'%';
+  $('bar').classList.toggle('full', pct>=ROUND_SIZE);
+  var tagEl=$('tag');
+  tagEl.textContent=q.tag+' - '+q.diff.toUpperCase();
+  tagEl.className='qtag tag-'+q.diff;
+  $('qtext').innerHTML=q.text;
+  $('cluebox').classList.remove('on');
+  $('cluetext').innerHTML='';
+  clueUsedThisQ=false; phoneUsedThisQ=false;
+  updateLifelines(); updateTurn();
+  $('fb').className='fb';
+  $('nextbtn').classList.remove('on');
+  var box=$('opts'); box.innerHTML='';
+  var letters=['A','B','C','D'];
+  for(var j=0;j<q.o.length;j++){
+    var b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML='<span class="k">'+letters[j]+'</span><span>'+q.o[j]+'</span>';
+    b.onclick=makeAnswerHandler(j);
+    box.appendChild(b);
+  }
+}
+
+function makeAnswerHandler(idx){
+  return function(){ answer(idx); };
+}
+
+function useClue(){
+  if(clues<=0 || clueUsedThisQ) return;
+  var q=QS[i];
+  if(!q.clue) return;
+  clues--; clueUsedThisQ=true;
+  $('cluetext').innerHTML=' '+q.clue;
+  $('cluebox').classList.add('on');
+  updateLifelines();
+}
+
+function phoneFriend(){
+  if(phones<=0 || phoneUsedThisQ) return;
+  var q=QS[i];
+  phones--; phoneUsedThisQ=true;
+  var wrongs=[0,1,2,3].filter(function(n){return n!==q.c;});
+  for(var a=wrongs.length-1;a>0;a--){var b=Math.floor(Math.random()*(a+1));var tmp=wrongs[a];wrongs[a]=wrongs[b];wrongs[b]=tmp;}
+  var remove=wrongs.slice(0,2);
+  var btns=document.getElementsByClassName('opt');
+  for(var j=0;j<remove.length;j++){
+    var btn=btns[remove[j]];
+    btn.classList.add('removed','locked');
+    btn.disabled=true;
+  }
+  updateLifelines();
+}
+
+function answer(idx){
+  var q=QS[i];
+  var btns=document.getElementsByClassName('opt');
+  var alreadyLocked = btns[0].classList.contains('locked') && !btns[0].classList.contains('removed');
+  if(alreadyLocked) return;
+  for(var k=0;k<btns.length;k++) btns[k].classList.add('locked');
+  var ok=idx===q.c;
+  btns[q.c].classList.add('right');
+  if(!ok) btns[idx].classList.add('wrong');
+  var fb=$('fb');
+  if(ok){
+    right++; roundCorrect++;
+    fb.className='fb on good';
+    $('fbhead').textContent='Correct!';
+  } else {
+    fb.className='fb on bad';
+    $('fbhead').textContent='Not quite - the answer is "'+q.o[q.c]+'"';
+  }
+  $('fbwhy').innerHTML=q.why;
+  $('right').textContent=right;
+  var doneInRound=(i%ROUND_SIZE)+1;
+  $('prog').style.width=((doneInRound/ROUND_SIZE)*100)+'%';
+  $('bar').classList.toggle('full', doneInRound>=ROUND_SIZE);
+  $('nextbtn').classList.add('on');
+}
+
+function next(){
+  var wasRoundEnd=((i+1)%ROUND_SIZE===0);
+  i++;
+  turn=turn===1?2:1;
+  if(wasRoundEnd && i>0){
+    if(locksOpen<TOTAL_ROUNDS){
+      paintLocks(locksOpen);
+      setTimeout(function(){
+        locksOpen++;
+        paintLocks();
+        showRoundOverlay();
+      },900);
+      return;
+    }
+  }
+  if(i>=QS.length){finish(false);return;}
+  render();
+}
+
+function showRoundOverlay(){
+  awaitingRound=true;
+  $('ovCorrect').textContent=roundCorrect;
+  $('ovLocks').textContent=locksOpen;
+  $('ovLeft').textContent=TOTAL_ROUNDS-locksOpen;
+  var roundNames=['','Holidays & Free Time','Past Tenses','Past Perfect & Used To','Present Perfect & Generations','Mixed Challenge'];
+  if(locksOpen>=TOTAL_ROUNDS){
+    $('ovTitle').textContent='\u{1F693} ALL LOCKS BROKEN!';
+    $('ovText').textContent='You broke every lock. You are out!';
+    $('ovBtn').textContent='See results -';
+    $('ovNext').textContent='';
+  } else {
+    $('ovTitle').textContent='\u{1F513} LOCK BROKEN!';
+    $('ovText').textContent='Round '+locksOpen+' complete - '+roundCorrect+' correct. '+(TOTAL_ROUNDS-locksOpen)+' lock(s) left.';
+    $('ovBtn').innerHTML='Start Round '+(locksOpen+1)+' -';
+    $('ovNext').textContent=String(locksOpen+1);
+  }
+  $('overlay').classList.add('on');
+}
+
+function nextRound(){
+  $('overlay').classList.remove('on');
+  awaitingRound=false;
+  roundCorrect=0;
+  if(i>=QS.length){finish(false);return;}
+  render();
+}
+
+function finish(timeUp){
+  clearInterval(timer);
+  $('overlay').classList.remove('on');
+  $('s-game').classList.remove('on');
+  $('s-end').classList.add('on');
+  var used=Math.min(TOTAL_SECONDS, Math.floor((Date.now()-t0)/1000));
+  $('fright').textContent=right;
+  $('fwrong').textContent=wrong;
+  $('flocks').textContent=locksOpen;
+  $('ftime').textContent=Math.floor(used/60)+':'+String(used%60).padStart(2,'0');
+  var rank,line;
+  if(locksOpen>=TOTAL_ROUNDS){
+    rank='\u{1F693} YOU ESCAPED!';
+    line='All five locks broken - brilliant teamwork. You are ready for the midterm.';
+  } else if(timeUp){
+    rank='Time is up!';
+    line='You broke '+locksOpen+' of '+TOTAL_ROUNDS+' locks before the clock ran out.';
+  } else {
+    rank='\u{1F513} Almost out';
+    line='You broke '+locksOpen+' of '+TOTAL_ROUNDS+' locks. Play again and break them all.';
+  }
+  $('rank').textContent=rank;
+  $('rankline').textContent=line;
+  var recap=[
+    'Use <b>past simple</b> for finished actions: <i>We <b>went</b> to the beach.</i>',
+    'Use <b>past continuous</b> for actions in progress: <i>We <b>were eating</b> when...</i>',
+    'Use <b>past perfect</b> for the earlier action: <i>She <b>had left</b> before I arrived.</i>',
+    'Use <b>used to</b> for past habits: <i>He <b>used to</b> go every day.</i>',
+    'Use <b>present perfect</b> for experience / unfinished time: <i>I <b>have seen</b> it.</i>',
+    'Know your <b>holiday, generations &amp; phrasal-verb</b> words.'
+  ];
+  var list=$('recapList');
+  list.innerHTML='';
+  for(var m=0;m<recap.length;m++){
+    var li=document.createElement('li');
+    li.innerHTML=recap[m];
+    list.appendChild(li);
+  }
+}
+
+document.addEventListener('keydown',function(e){
+  if($('overlay').classList.contains('on')){
+    if(e.code==='Space'){e.preventDefault();nextRound();}
+    return;
+  }
+  if(!$('s-game').classList.contains('on')){
+    if(e.code==='Space' && $('s-start').classList.contains('on')){e.preventDefault();start();}
+    return;
+  }
+  if(['1','2','3','4'].includes(e.key)) answer(parseInt(e.key)-1);
+  if(e.key==='h'||e.key==='H') useClue();
+  if(e.key==='p'||e.key==='P') phoneFriend();
+  if(e.code==='Space' && $('nextbtn').classList.contains('on')){e.preventDefault();next();}
+});
+</script>
+</body>
+</html>
