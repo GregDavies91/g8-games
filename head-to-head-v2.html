@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Duel V2 — English G8-1 Head-to-Head Challenge</title>
+<style>
+:root{--bg:#0c1018;--panel:#151b28;--panel2:#1c2434;--ink:#eef3fb;--muted:#8b98b4;--amber:#ffb703;--teal:#2ec4b6;--green:#3ddc84;--red:#ff5c7a;--blue:#6ea8fe;--purple:#c77dff}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(1100px 700px at 50% -5%,#18202f,#0c1018 65%);color:var(--ink);font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;padding:16px}
+.wrap{width:100%;max-width:1020px}
+.screen{display:none;animation:fade .35s ease}.screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+h1{font-size:clamp(25px,5vw,48px);font-weight:800;text-align:center;margin:0 0 6px;letter-spacing:-1px}
+h1 span{color:var(--amber)}
+.sub{text-align:center;color:var(--muted);font-size:clamp(13px,2.1vw,18px);margin:0 0 22px}
+.brief{background:var(--panel);border:1px solid #263149;border-radius:18px;padding:22px 26px;max-width:680px;margin:0 auto 22px}
+.brief h3{margin:0 0 10px;color:var(--teal);font-size:15px;text-transform:uppercase;letter-spacing:.9px}
+.brief p{margin:0 0 9px;line-height:1.6;color:#cdd6e8;font-size:15px}
+.btn{display:block;margin:0 auto;padding:15px 40px;border:0;border-radius:15px;cursor:pointer;font-size:clamp(16px,2.4vw,20px);font-weight:800;font-family:inherit;background:linear-gradient(135deg,var(--amber),#ffd166);color:#241a00;box-shadow:0 10px 26px rgba(255,183,3,.3);transition:.18s}
+.btn:hover{transform:translateY(-2px)}
+.hint{text-align:center;color:var(--muted);font-size:13px;margin-top:13px}
+.vs{display:flex;align-items:center;justify-content:center;gap:20px;margin:0 auto 22px;max-width:680px}
+.vs .player{flex:1;text-align:center;padding:20px;border-radius:18px;border:2px solid}
+.vs .player.p1{border-color:var(--blue);background:rgba(110,168,254,.08)}
+.vs .player.p2{border-color:var(--purple);background:rgba(199,125,255,.08)}
+.vs .player h2{margin:0 0 4px;font-size:clamp(18px,3vw,26px)}
+.vs .player.p1 h2{color:var(--blue)}
+.vs .player.p2 h2{color:var(--purple)}
+.vs .player p{margin:0;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.8px}
+.vs-badge{font-size:clamp(28px,5vw,44px);font-weight:900;color:var(--amber);text-shadow:0 0 20px rgba(255,183,3,.5);animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.6}}
+.hud{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:10px;flex-wrap:wrap}
+.player-panel{flex:1;min-width:200px;background:var(--panel);border:2px solid #263149;border-radius:16px;padding:12px 16px;transition:.3s}
+.player-panel.active-p1{border-color:var(--blue);box-shadow:0 0 20px rgba(110,168,254,.3)}
+.player-panel.active-p2{border-color:var(--purple);box-shadow:0 0 20px rgba(199,125,255,.3)}
+.player-panel h3{margin:0 0 6px;font-size:14px;text-transform:uppercase;letter-spacing:.8px}
+.player-panel.p1 h3{color:var(--blue)}
+.player-panel.p2 h3{color:var(--purple)}
+.player-panel .score{font-size:clamp(24px,4vw,36px);font-weight:800;line-height:1}
+.player-panel.p1 .score{color:var(--blue)}
+.player-panel.p2 .score{color:var(--purple)}
+.player-panel .lifelines{display:flex;gap:8px;margin-top:8px}
+.ll{display:flex;align-items:center;gap:5px;background:var(--panel2);border:2px solid #263149;border-radius:10px;padding:5px 10px;cursor:pointer;font-weight:700;font-size:12px;color:var(--ink);font-family:inherit;transition:.2s;position:relative}
+.ll:hover:not(.used){border-color:var(--teal);transform:translateY(-1px)}
+.ll .count{background:var(--teal);color:#08170e;border-radius:99px;padding:1px 6px;font-size:10px;font-weight:800}
+.ll.used{opacity:.35;cursor:not-allowed;text-decoration:line-through;border-color:#263149}
+.ll.used .count{background:#4a5273;color:#98a2c0}
+.turn-banner{text-align:center;font-weight:800;font-size:clamp(14px,2.2vw,18px);padding:8px 16px;border-radius:999px;margin:0 auto 12px;width:fit-content;transition:.25s}
+.turn-banner.p1{background:rgba(110,168,254,.2);color:#bcd0ff}
+.turn-banner.p2{background:rgba(199,125,255,.2);color:#e2c8ff}
+.qcard{background:var(--panel);border:1px solid #263149;border-radius:20px;padding:clamp(17px,2.8vw,26px)}
+.qtag{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;padding:5px 12px;border-radius:999px;margin-bottom:12px}
+.tag-easy{background:rgba(61,220,132,.15);color:var(--green)}
+.tag-med{background:rgba(255,183,3,.15);color:var(--amber)}
+.tag-hard{background:rgba(255,92,122,.15);color:var(--red)}
+.qtext{font-size:clamp(16px,2.6vw,22px);font-weight:700;line-height:1.42;margin:0}
+.qtext u{text-decoration-color:var(--amber);text-underline-offset:4px}
+.clue{margin-top:12px;background:rgba(199,125,255,.12);border:1px dashed rgba(199,125,255,.5);border-radius:12px;padding:12px 15px;font-size:14.5px;color:#e2c8ff;display:none;animation:fade .3s}
+.clue.on{display:block}
+.clue b{color:var(--violet);text-transform:uppercase;font-size:11px;letter-spacing:.9px;display:block;margin-bottom:4px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:16px}
+@media(max-width:640px){.opts{grid-template-columns:1fr}}
+.opt{display:flex;align-items:center;gap:11px;padding:14px 16px;border-radius:13px;cursor:pointer;background:var(--panel2);border:2px solid #263149;font-size:clamp(14px,2vw,16.5px);font-weight:600;transition:.16s;text-align:left;color:var(--ink);font-family:inherit}
+.opt:hover:not(.locked){border-color:var(--teal);transform:translateX(4px)}
+.opt .k{width:26px;height:26px;flex:0 0 26px;border-radius:7px;background:#263149;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--muted)}
+.opt.right{background:rgba(61,220,132,.16);border-color:var(--green)}
+.opt.right .k{background:var(--green);color:#08170e}
+.opt.wrong{background:rgba(255,92,122,.14);border-color:var(--red)}
+.opt.wrong .k{background:var(--red);color:#2a0710}
+.opt.locked{cursor:default}
+.opt.removed{opacity:.28;text-decoration:line-through;cursor:default}
+.fb{margin-top:15px;border-radius:14px;padding:16px 18px;display:none;animation:fade .3s}
+.fb.on{display:block}
+.fb.good{background:rgba(61,220,132,.1);border:1px solid rgba(61,220,132,.38)}
+.fb.bad{background:rgba(255,92,122,.09);border:1px solid rgba(255,92,122,.32)}
+.fb .head{font-weight:800;font-size:clamp(15px,2.2vw,18px);margin-bottom:6px}
+.fb.good .head{color:var(--green)} .fb.bad .head{color:var(--red)}
+.fb .why{font-size:clamp(13px,1.9vw,15px);color:#c8d2e6;line-height:1.55}
+.fb .why b{color:var(--amber)}
+.next{display:none;margin-top:14px} .next.on{display:block}
+.rank{font-size:clamp(23px,4.6vw,40px);font-weight:800;text-align:center;margin:0 0 8px}
+.rankline{text-align:center;color:var(--muted);font-size:clamp(14px,2vw,17px);margin:0 0 22px}
+.stats{display:flex;gap:13px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+.st{padding:15px 24px;border-radius:14px;text-align:center;background:var(--panel);border:1px solid #263149;min-width:115px}
+.st .n{font-size:clamp(22px,4.4vw,34px);font-weight:800;line-height:1;color:var(--amber)}
+.st .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:5px}
+.recap{background:var(--panel);border:1px solid #263149;border-radius:16px;padding:20px 24px;max-width:680px;margin:0 auto}
+.recap h3{margin:0 0 11px;font-size:15px;color:var(--teal);text-transform:uppercase;letter-spacing:.8px}
+.recap ul{margin:0;padding-left:20px;color:#c8d2e6;line-height:1.7}
+.recap li b{color:var(--amber)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="screen on" id="s-start">
+  <h1>The <span>Duel</span> <span style="font-size:.45em;vertical-align:middle;color:var(--muted)">V2</span></h1>
+  <p class="sub">English G8-1 · Midterm Revision · Head-to-Head Challenge</p>
+  <div class="vs">
+    <div class="player p1">
+      <h2>Player 1</h2>
+      <p>Challenge Level</p>
+    </div>
+    <div class="vs-badge">VS</div>
+    <div class="player p2">
+      <h2>Player 2</h2>
+      <p>Medium Level</p>
+    </div>
+  </div>
+  <div class="brief">
+    <h3>How it works</h3>
+    <p>Each player answers <b>10 questions</b> at their own level. Take turns — Player 1 goes first.</p>
+    <p>Correct answer = <b>1 point</b>. Most points wins.</p>
+    <p>Each player has <b>3 Phone a Friend</b> and <b>3 Clues</b>.</p>
+    <p>Questions are <b>randomly selected</b> each time — play again for a new challenge.</p>
+  </div>
+  <button class="btn" onclick="start()">Start the Duel →</button>
+  <p class="hint">Keys <b>1–4</b> to answer · <b>H</b> clue · <b>P</b> phone a friend · <b>Space</b> next</p>
+</div>
+
+<div class="screen" id="s-game">
+  <div class="hud">
+    <div class="player-panel p1" id="panel1">
+      <h3>Player 1</h3>
+      <div class="score" id="score1">0</div>
+      <div class="lifelines">
+        <button class="ll" id="llPhone1" onclick="phoneFriend(1)">📞 <span class="count" id="phoneCount1">3</span></button>
+        <button class="ll" id="llClue1" onclick="useClue(1)">💡 <span class="count" id="clueCount1">3</span></button>
+      </div>
+    </div>
+    <div class="player-panel p2" id="panel2">
+      <h3>Player 2</h3>
+      <div class="score" id="score2">0</div>
+      <div class="lifelines">
+        <button class="ll" id="llPhone2" onclick="phoneFriend(2)">📞 <span class="count" id="phoneCount2">3</span></button>
+        <button class="ll" id="llClue2" onclick="useClue(2)">💡 <span class="count" id="clueCount2">3</span></button>
+      </div>
+    </div>
+  </div>
+  <div class="turn-banner p1" id="turnBanner">Player 1's turn</div>
+  <div class="qcard">
+    <div class="qtag" id="tag">Loading</div>
+    <p class="qtext" id="qtext">Loading…</p>
+    <div class="clue" id="cluebox"><b>💡 Clue</b><span id="cluetext"></span></div>
+    <div class="opts" id="opts"></div>
+    <div class="fb" id="fb"><div class="head" id="fbhead"></div><div class="why" id="fbwhy"></div></div>
+    <button class="btn next" id="nextbtn" onclick="next()">Next →</button>
+  </div>
+</div>
+
+<div class="screen" id="s-end">
+  <div class="rank" id="rank"></div>
+  <p class="rankline" id="rankline"></p>
+  <div class="stats">
+    <div class="st"><div class="n" id="endScore1">0</div><div class="l">Player 1</div></div>
+    <div class="st"><div class="n" id="endScore2">0</div><div class="l">Player 2</div></div>
+  </div>
+  <div class="recap">
+    <h3>Before the exam, make sure you can…</h3>
+    <ul id="recapList"></ul>
+  </div>
+  <button class="btn" style="margin-top:22px" onclick="location.reload()">Play again 🔁</button>
+</div>
+
+</div>
+<script>
+/* ============================================================
+   THE DUEL V2 — English G8-1 head-to-head revision
+   10 questions per player, randomly selected each game.
+   Player 1 = challenge level · Player 2 = medium level
+   Scope: holidays vocab · past simple · past continuous ·
+     present simple/continuous · going to/will · used to ·
+     present perfect · generations vocab · word forms
+   ============================================================ */
+
+const P1_POOL = [
+{tag:"Holidays",diff:"hard",text:"The ancient castle was one of the most impressive ______ I have ever visited — the guide spent two hours showing us every room.",o:["facilities","sights","souvenirs","tours"],c:1,why:"<b>sights</b> — the interesting places you visit.",clue:"Think about the places you go to LOOK at when you are a tourist."},
+{tag:"Past simple",diff:"hard",text:"The company ______ a huge profit last year, so they decided to expand.",o:["did","made","had","got"],c:1,why:"<b>made</b> — \"make a profit\" is the correct collocation.",clue:"This verb collocates with \"profit\". It starts with \"m\"."},
+{tag:"Past continuous",diff:"hard",text:"While I ______ through the old market, I found a beautiful antique vase.",o:["walked","was walking","had walked","am walking"],c:1,why:"<b>was walking</b> — \"While\" + past continuous for a background action.",clue:"\"While\" tells you the action was in progress. Use past continuous."},
+{tag:"Going to vs will",diff:"hard",text:"Look at those clouds! It ______ rain.",o:["is going to","will","goes to","shall"],c:0,why:"<b>is going to</b> — prediction with present evidence (clouds).",clue:"You can see the evidence (clouds). Use \"going to\" for predictions with evidence."},
+{tag:"Used to",diff:"hard",text:"She ______ afraid of the dark, but now she sleeps with a nightlight.",o:["didn't used to be","didn't use to be","used not to be","wasn't used to be"],c:1,why:"<b>didn't use to be</b> — after \"didn't\", the word \"use\" has no \"-d\".",clue:"After \"didn't\", the word \"use\" has NO \"-d\"."},
+{tag:"Present perfect",diff:"hard",text:"______ you ever ______ a Michelin-starred restaurant?",o:["Did / eat","Have / eaten","Do / eat","Are / eating"],c:1,why:"<b>Have / eaten</b> — \"ever\" = experience → present perfect.",clue:"\"Ever\" = experience up to now → present perfect."},
+{tag:"Generations",diff:"hard",text:"A person in their early thirties is considered ______.",o:["elderly","middle-aged","an adolescent","a young adult"],c:3,why:"<b>a young adult</b> — early thirties = young adult. Middle-aged = 40s-60s.",clue:"Early thirties is not middle-aged (40s-60s) or elderly (80+)."},
+{tag:"Word form",diff:"hard",text:"The ______ of the ancient temple attracted thousands of tourists. (beautiful)",o:["beautiful","beautifully","beauty","beautify"],c:2,why:"<b>beauty</b> — need a noun after \"The\".",clue:"After \"The\", you need a noun. The noun form of \"beautiful\" is \"beauty\"."},
+{tag:"Mixed grammar",diff:"hard",text:"She ______ for the company since 2015, and she ______ a promotion last month.",o:["worked / got","has worked / got","works / gets","is working / is getting"],c:1,why:"<b>has worked / got</b> — \"since 2015\" = present perfect; \"last month\" = past simple.",clue:"\"Since\" = present perfect. \"Last month\" = past simple."},
+{tag:"Reading inference",diff:"hard",text:"\"The old market was a maze of narrow streets. Vendors sold everything from silk scarves to spicy noodles. The noise was constant. But Maria loved it. She said it felt more real than the shopping malls back home.\" What does Maria think about the market?",o:["It is too noisy","It is more authentic than malls","It is dangerous","It is boring"],c:1,why:"<b>It is more authentic than malls</b> — \"more real\" = more authentic.",clue:"\"More real\" means the same as \"more authentic\"."},
+{tag:"Past perfect",diff:"hard",text:"When we arrived at the cinema, the film ______ already started.",o:["has","had","was","is"],c:1,why:"<b>had</b> — past perfect for an action before another past action.",clue:"\"Already started\" = before another past action. Use past perfect."},
+{tag:"Collocation",diff:"hard",text:"The team ______ a great effort to win the championship.",o:["did","made","had","took"],c:1,why:"<b>made</b> — \"make an effort\" is the correct collocation.",clue:"This verb collocates with \"effort\". It starts with \"m\"."},
+{tag:"Word form",diff:"hard",text:"His ______ to learn new things is impressive. (able)",o:["able","ably","ability","ableness"],c:2,why:"<b>ability</b> — need a noun after \"His\".",clue:"After \"His\", you need a noun. The noun form of \"able\" is \"ability\"."},
+{tag:"Grammar mix",diff:"hard",text:"I ______ (not finish) my homework when my friend ______ (call) me.",o:["didn't finish / called","haven't finish / called","wasn't finish / was calling","didn't finish / was calling"],c:0,why:"<b>didn't finish / called</b> — two past simple actions in sequence.",clue:"Both actions are completed in the past. Use past simple for both."},
+{tag:"Reading inference",diff:"hard",text:"\"The beach was almost empty. A few fishermen sat by their boats. The sun was setting, painting the sky orange. Sarah walked slowly along the shore, thinking about the day.\" What was Sarah doing?",o:["Fishing","Walking and thinking","Taking photos","Swimming"],c:1,why:"<b>Walking and thinking</b> — \"walked slowly along the shore, thinking about the day\".",clue:"Find the sentence that says what Sarah was doing on the shore."},
+];
+
+const P2_POOL = [
+{tag:"Holidays",diff:"med",text:"We decided to ______ a car for the weekend and drive to the mountains.",o:["hire","rent","borrow","take"],c:0,why:"<b>hire</b> — pay to use something for a short time.",clue:"It means to pay to use something for a short time. (Americans say \"rent\".)"},
+{tag:"Past simple",diff:"med",text:"She ______ (fall) off her bike and broke her arm.",o:["fall","fell","fallen","falling"],c:1,why:"<b>fell</b> — irregular past of \"fall\".",clue:"This verb is IRREGULAR. Its past form is not \"falled\"."},
+{tag:"Present continuous",diff:"med",text:"I ______ (stay) with my aunt this week because my parents are away.",o:["stay","am staying","stayed","have stayed"],c:1,why:"<b>am staying</b> — temporary situation this week → present continuous.",clue:"\"This week\" = a temporary situation. Use present continuous."},
+{tag:"Going to vs will",diff:"med",text:"I think it ______ (rain) later — the sky is very dark.",o:["will rain","is going to rain","rains","is raining"],c:1,why:"<b>is going to rain</b> — prediction with present evidence (dark sky).",clue:"You can see the evidence (dark sky). Use \"going to\" for predictions with evidence."},
+{tag:"Used to",diff:"med",text:"______ you ______ (play) the piano when you were younger?",o:["Did / use to play","Do / use to play","Have / used to play","Were / used to play"],c:0,why:"<b>Did / use to play</b> — past habit question → Did + use to + base verb.",clue:"Past habit question. After \"Did\", the word \"use\" has NO \"-d\"."},
+{tag:"Present perfect",diff:"med",text:"I ______ (not see) that film yet. Is it any good?",o:["didn't see","haven't seen","don't see","am not seeing"],c:1,why:"<b>haven't seen</b> — \"yet\" = up to now → present perfect.",clue:"\"Yet\" in negatives = up to now → present perfect."},
+{tag:"Generations",diff:"med",text:"My uncle is 45, so he's ______.",o:["middle-aged","an adolescent","elderly","a young adult"],c:0,why:"<b>middle-aged</b> — 45 is middle age (40s-60s).",clue:"45 is not elderly (80+) or a young adult (20s-30s)."},
+{tag:"Word form",diff:"med",text:"The ______ of the old building was impressive. (high)",o:["high","highly","height","highness"],c:2,why:"<b>height</b> — need a noun after \"The\".",clue:"After \"The\", you need a noun. The noun form of \"high\" is \"height\"."},
+{tag:"Mixed grammar",diff:"med",text:"When I ______ (arrive) at the party, everyone ______ (dance).",o:["arrived / was dancing","arrived / danced","was arriving / danced","was arriving / was dancing"],c:0,why:"<b>arrived / was dancing</b> — short action (arrived) interrupts long action (was dancing).",clue:"One action was happening when another arrived → past continuous + past simple."},
+{tag:"Reading",diff:"med",text:"\"Tom is 16. He lives in Beijing with his parents. He loves playing basketball and he practices every day after school. His dream is to play in the NBA one day. He says basketball teaches him about teamwork and never giving up.\" What does basketball teach Tom?",o:["How to be famous","About teamwork and never giving up","How to travel the world","How to be a coach"],c:1,why:"<b>About teamwork and never giving up</b> — the text says \"basketball teaches him about teamwork and never giving up.\"",clue:"Find the sentence that says \"basketball teaches him about...\""},
+{tag:"Past continuous",diff:"med",text:"At 8 pm yesterday, we ______ dinner at a nice restaurant.",o:["eat","were eating","ate","are eating"],c:1,why:"<b>were eating</b> — \"At 8 pm yesterday\" = a moment in the past → past continuous.",clue:"\"At 8 pm yesterday\" = a moment in the past. Use past continuous."},
+{tag:"Used to",diff:"med",text:"He ______ like coffee, but now he drinks it every day.",o:["didn't use to","didn't used to","doesn't use to","hadn't used to"],c:0,why:"<b>didn't use to</b> — after \"didn't\", the word \"use\" has NO \"-d\".",clue:"After \"didn't\", the word \"use\" has NO \"-d\"."},
+{tag:"Present perfect",diff:"med",text:"______ you ever ______ a foreign film in English?",o:["Did / see","Have / seen","Do / see","Are / seeing"],c:1,why:"<b>Have / seen</b> — \"ever\" = experience → present perfect.",clue:"\"Ever\" = experience up to now → present perfect."},
+{tag:"Word form",diff:"med",text:"The ______ of the ceremony was beautiful. (begin)",o:["begin","began","beginning","begun"],c:2,why:"<b>beginning</b> — need a noun after \"The\".",clue:"After \"The\", you need a noun. The noun form of \"begin\" is \"beginning\"."},
+{tag:"Going to vs will",diff:"med",text:"I ______ (visit) my grandmother next weekend — I already have the tickets.",o:["will visit","am going to visit","visit","am visiting"],c:1,why:"<b>am going to visit</b> — plan with evidence (tickets) → going to.",clue:"You already have the tickets = a plan. Use \"going to\"."},
+{tag:"Past simple",diff:"med",text:"We ______ (not have) an umbrella, so we got very wet.",o:["didn't had","don't have","didn't have","haven't had"],c:2,why:"<b>didn't have</b> — past simple negative = didn't + base verb.",clue:"After \"didn't\", use the base form of the verb."},
+{tag:"Reading",diff:"med",text:"\"Lily is 14. She lives in Shenzhen with her parents and her little brother. She likes playing badminton and reading books. Her favourite subject is science.\" How many people are in Lily's family?",o:["Three","Four","Five","Six"],c:1,why:"<b>Four</b> — Lily + parents (2) + little brother (1) = 4.",clue:"Count Lily, her mum, her dad, and her brother."},
+{tag:"Generations",diff:"med",text:"A person who is 80 years old is ______.",o:["an adolescent","middle-aged","elderly","a young adult"],c:2,why:"<b>elderly</b> — 80 is very old.",clue:"It means very old, usually 80+."},
+{tag:"Present continuous",diff:"med",text:"Look! The children ______ in the garden.",o:["play","are playing","played","have played"],c:1,why:"<b>are playing</b> — \"Look!\" = happening now → present continuous.",clue:"\"Look!\" tells you it is happening right now. Use present continuous."},
+];
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function pickQuestions(pool, count){
+  return shuffle(pool).slice(0, count);
+}
+
+let P1_QS, P2_QS;
+let currentPlayer=1, p1Idx=0, p2Idx=0;
+let p1Score=0, p2Score=0;
+let p1Phones=3, p1Clues=3, p2Phones=3, p2Clues=3;
+let p1ClueUsed=false, p1PhoneUsed=false, p2ClueUsed=false, p2PhoneUsed=false;
+
+function start(){
+  P1_QS = pickQuestions(P1_POOL, 10);
+  P2_QS = pickQuestions(P2_POOL, 10);
+  $("s-start").classList.remove("on");
+  $("s-game").classList.add("on");
+  render();
+}
+
+function render(){
+  const q=currentPlayer===1?P1_QS[p1Idx]:P2_QS[p2Idx];
+  const tagEl=$("tag");
+  tagEl.textContent=q.tag+" · "+q.diff.toUpperCase();
+  tagEl.className="qtag tag-"+q.diff;
+  $("qtext").innerHTML=q.text;
+  $("cluebox").classList.remove("on");
+  $("cluetext").innerHTML="";
+  if(currentPlayer===1){p1ClueUsed=false;p1PhoneUsed=false;}else{p2ClueUsed=false;p2PhoneUsed=false;}
+  updateLifelines();
+  updateTurn();
+  updatePanels();
+  $("fb").className="fb";
+  $("nextbtn").classList.remove("on");
+  const box=$("opts"); box.innerHTML="";
+  const letters=["A","B","C","D"];
+  q.o.forEach((t,idx)=>{
+    const b=document.createElement("button");
+    b.className="opt";
+    b.innerHTML="<span class=\"k\">"+letters[idx]+"</span><span>"+t+"</span>";
+    b.onclick=()=>answer(idx);
+    box.appendChild(b);
+  });
+}
+
+function updateTurn(){
+  const el=$("turnBanner");
+  el.className="turn-banner "+(currentPlayer===1?"p1":"p2");
+  el.textContent=(currentPlayer===1?"Player 1":"Player 2")+"'s turn";
+}
+
+function updatePanels(){
+  $("panel1").className="player-panel p1"+(currentPlayer===1?" active-p1":"");
+  $("panel2").className="player-panel p2"+(currentPlayer===2?" active-p2":"");
+}
+
+function updateLifelines(){
+  const phones=currentPlayer===1?p1Phones:p2Phones;
+  const clues=currentPlayer===1?p1Clues:p2Clues;
+  const phoneBtn=$(currentPlayer===1?"llPhone1":"llPhone2");
+  const clueBtn=$(currentPlayer===1?"llClue1":"llClue2");
+  const phoneCount=$(currentPlayer===1?"phoneCount1":"phoneCount2");
+  const clueCount=$(currentPlayer===1?"clueCount1":"clueCount2");
+  phoneCount.textContent=phones;
+  clueCount.textContent=clues;
+  phoneBtn.classList.toggle("used", phones<=0);
+  clueBtn.classList.toggle("used", clues<=0);
+  phoneBtn.disabled=phones<=0;
+  clueBtn.disabled=clues<=0;
+}
+
+function useClue(){
+  const q=currentPlayer===1?P1_QS[p1Idx]:P2_QS[p2Idx];
+  if(currentPlayer===1){
+    if(p1Clues<=0||p1ClueUsed)return;
+    p1Clues--; p1ClueUsed=true;
+  }else{
+    if(p2Clues<=0||p2ClueUsed)return;
+    p2Clues--; p2ClueUsed=true;
+  }
+  if(!q.clue)return;
+  $("cluetext").innerHTML=" "+q.clue;
+  $("cluebox").classList.add("on");
+  updateLifelines();
+}
+
+function phoneFriend(){
+  const q=currentPlayer===1?P1_QS[p1Idx]:P2_QS[p2Idx];
+  if(currentPlayer===1){
+    if(p1Phones<=0||p1PhoneUsed)return;
+    p1Phones--; p1PhoneUsed=true;
+  }else{
+    if(p2Phones<=0||p2PhoneUsed)return;
+    p2Phones--; p2PhoneUsed=true;
+  }
+  const wrongs=[0,1,2,3].filter(n=>n!==q.c);
+  for(let a=wrongs.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[wrongs[a],wrongs[b]]=[wrongs[b],wrongs[a]];}
+  const remove=wrongs.slice(0,2);
+  const btns=[...document.querySelectorAll(".opt")];
+  remove.forEach(n=>{btns[n].classList.add("removed","locked");btns[n].disabled=true;});
+  updateLifelines();
+}
+
+function answer(idx){
+  const q=currentPlayer===1?P1_QS[p1Idx]:P2_QS[p2Idx];
+  const btns=[...document.querySelectorAll(".opt")];
+  if(btns[0].classList.contains("locked")&&!btns[0].classList.contains("removed"))return;
+  btns.forEach(b=>b.classList.add("locked"));
+  const ok=idx===q.c;
+  btns[q.c].classList.add("right");
+  if(!ok)btns[idx].classList.add("wrong");
+  const fb=$("fb");
+  if(ok){
+    if(currentPlayer===1)p1Score++;else p2Score++;
+    fb.className="fb on good";
+    $("fbhead").textContent="✓ Correct!";
+  }else{
+    fb.className="fb on bad";
+    $("fbhead").textContent="✗ Not quite — the answer is \""+q.o[q.c]+"\"";
+  }
+  $("fbwhy").innerHTML=q.why;
+  $("score1").textContent=p1Score;
+  $("score2").textContent=p2Score;
+  $("nextbtn").classList.add("on");
+}
+
+function next(){
+  if(currentPlayer===1){
+    currentPlayer=2;
+    render();
+  }else{
+    if(p2Idx>=P2_QS.length-1){endGame();return;}
+    currentPlayer=1;
+    p1Idx++; p2Idx++;
+    render();
+  }
+}
+
+function endGame(){
+  $("s-game").classList.remove("on");
+  $("s-end").classList.add("on");
+  $("endScore1").textContent=p1Score;
+  $("endScore2").textContent=p2Score;
+  let rank,line;
+  if(p1Score>p2Score){
+    rank="🏆 Player 1 Wins!";
+    line="Challenge level conquered. Brilliant work.";
+  }else if(p2Score>p1Score){
+    rank="🏆 Player 2 Wins!";
+    line="Medium level mastered. Well done!";
+  }else{
+    rank="🤝 It's a Draw!";
+    line="Both players scored "+p1Score+" points. Rematch?";
+  }
+  $("rank").textContent=rank;
+  $("rankline").textContent=line;
+  const recap=[
+    "Use <b>past simple</b> for finished actions: <i>We <b>went</b> to the beach.</i>",
+    "Use <b>past continuous</b> for actions in progress: <i>We <b>were eating</b> when…</i>",
+    "Use <b>used to</b> for past habits: <i>He <b>used to</b> go every day.</i>",
+    "Use <b>present perfect</b> for experience / unfinished time: <i>I <b>have seen</b> it.</i>",
+    "Know your <b>holiday, generations &amp; word-form</b> words.",
+  ];
+  const list=$("recapList");
+  list.innerHTML="";
+  recap.forEach(t=>{const li=document.createElement("li");li.innerHTML=t;list.appendChild(li);});
+}
+
+document.addEventListener("keydown",e=>{
+  if(!$("s-game").classList.contains("on")){
+    if(e.code==="Space"&&$("s-start").classList.contains("on")){e.preventDefault();start();}
+    return;
+  }
+  if(["1","2","3","4"].includes(e.key))answer(parseInt(e.key)-1);
+  if(e.key==="h"||e.key==="H")useClue();
+  if(e.key==="p"||e.key==="P")phoneFriend();
+  if(e.code==="Space"&&$("nextbtn").classList.contains("on")){e.preventDefault();next();}
+});
+</script>
+</body>
+</html>
